@@ -1,0 +1,19 @@
+test:
+  image: gradle:jdk17
+  script:
+    - gradle test
+  artifacts:
+    when: always
+    paths:
+      - build/test-results/test/TEST-*.xml
+    reports:
+      junit: build/test-results/test/TEST-*.xml
+
+docs:
+  image: gradle:jdk17
+  script:
+    - gradle javadoc
+  artifacts:
+    when: always
+    paths:
+      - build/docs/javadoc

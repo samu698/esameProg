@@ -1,0 +1,4 @@
+* * x x a
+* x * x a
+* * + x a + x b + x c
+* + x a * + x b + x c

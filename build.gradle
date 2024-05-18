@@ -1,0 +1,96 @@
+plugins {
+  id 'application'
+  id 'com.diffplug.spotless' version '6.22.0'
+  id 'jacoco'
+  id 'pmd'
+}
+
+repositories {
+  mavenLocal()
+  mavenCentral()
+  maven {
+    url = uri("https://maven.pkg.github.com/prog2-unimi/jubbiot")
+    credentials {
+      username = 'mapio'
+      password = project.github_token
+    }
+  }
+}
+
+dependencies {
+  testImplementation 'org.junit.jupiter:junit-jupiter:5.9.3'
+  testImplementation 'it.unimi.di.prog2:jubbiot:0.3a0'
+  testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.withType(JavaCompile) {
+  options.encoding = 'UTF-8'
+  options.compilerArgs.add('-Xlint:all')
+  options.compilerArgs.add('-Werror') 
+}
+
+java {
+  toolchain {
+    languageVersion = JavaLanguageVersion.of(17)
+  }
+}
+
+tasks.named('test') {
+  useJUnitPlatform()
+  testLogging {
+    events 'skipped', 'failed'
+    afterSuite { desc, result ->
+      if (!desc.parent) {
+        println "Results: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} successes, ${result.failedTestCount} failures, ${result.skippedTestCount} skipped)"
+      }
+    }
+  }
+  defaultCharacterEncoding = 'UTF-8'
+  finalizedBy jacocoTestReport
+}
+
+
+spotless {
+  enforceCheck false
+  java {
+    googleJavaFormat('1.17.0')
+    removeUnusedImports()
+    indentWithSpaces(2)
+    endWithNewline()
+  }
+}
+
+tasks.withType(JavaExec) {
+  enableAssertions = project.hasProperty('enableAssertions') ? project.getProperty('enableAssertions') : false
+}
+
+tasks.register('consegna', Exec) {
+  dependsOn spotlessApply
+  commandLine 'git', 'add', 'src', 'tests'
+  doLast {
+    exec {
+      ignoreExitValue true
+      commandLine 'git', 'commit', '-m', 'Consegna'
+    }
+    exec {
+      commandLine 'git', 'push'
+    }
+  }
+}
+
+tasks.register('cleanActual', Delete) {
+  delete fileTree('tests').matching {
+    include '**/actual-*.txt'
+  }
+}
+
+clean {
+  dependsOn cleanActual
+}
+
+pmd {
+  consoleOutput = true
+  toolVersion = '6.55.0'
+  rulesMinimumPriority = 5
+  ruleSets = [file('pmd.xml').toString()]
+}

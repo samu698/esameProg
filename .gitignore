@@ -1,0 +1,6 @@
+bin/
+build/
+.gradle/
+*.class
+.DS_Store
+actual-[0-9]*.txt
