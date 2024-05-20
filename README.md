@@ -92,11 +92,11 @@ Dovrà implementare una gerarchia di oggetti utili a:
   [*espansione*](./espressioni/3-Manipolazione.md#espansione) e
   [*derivazione*](./espressioni/3-Manipolazione.md#derivazione).
 
-Al fine di evitare confusione con il pacchetto di utilità e con i client
-(descritti nella prossima sezione), è consigliabile che le classi della sua
-soluzione siano contenute un un pacchetto (e in un numero ragionevole di
-eventuali sotto-pacchetti) a parte, ad esempio nel pacchetto `luppolo` i cui
-sorgenti dovranno essere nella directory `src/main/java/luppolo`.
+Al fine di evitare confusione con i client (descritti nella prossima sezione), è
+consigliabile che le classi della sua soluzione siano contenute un un pacchetto
+(e in un numero ragionevole di eventuali sotto-pacchetti) a parte, ad esempio
+nel pacchetto `luppolo` i cui sorgenti dovranno essere nella directory
+`src/main/java/luppolo`.
 
 Per evitare il rischio di perdere il lavoro svolto, **effettui consegne
 periodiche** del suo materiale con il comando `gradle consegna`. Osservi che
