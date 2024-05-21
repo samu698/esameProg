@@ -49,6 +49,20 @@ tasks.named('test') {
   finalizedBy jacocoTestReport
 }
 
+javadoc {
+  exclude('utils/**', 'clients/**')
+  options {
+    encoding = 'UTF-8'
+    charSet = 'UTF-8'
+    links = [ 'https://docs.oracle.com/en/java/javase/17/docs/api/' ]
+    docTitle = 'Luppolo'
+    header = '<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>'
+    showFromPrivate()
+    addBooleanOption 'Xdoclint:all', true
+    addBooleanOption 'Werror', true
+    addBooleanOption '-allow-script-in-comments', true
+  }
+}
 
 spotless {
   enforceCheck false
@@ -66,7 +80,7 @@ tasks.withType(JavaExec) {
 
 tasks.register('consegna', Exec) {
   dependsOn spotlessApply
-  commandLine 'git', 'add', 'src', 'tests'
+  commandLine 'git', 'add', 'src/main/java'
   doLast {
     exec {
       ignoreExitValue true
