@@ -1,5 +1,13 @@
 package clients.rappresentazione;
 
+import node.Node;
+import parse.ParsingExcpetion;
+import parse.Polish;
+import print.BasicPrinter;
+import print.TreePrinter;
+
+import java.util.Scanner;
+
 /** Classe contenete il client per verificare la rappresentazione ad albero delle espressioni. */
 public class Albero {
 
@@ -12,6 +20,13 @@ public class Albero {
    *
    * @param args non utilizzati.
    */
-  // public static void main(String[] args)
+  public static void main(String[] args) throws ParsingExcpetion {
+	  Scanner s = new Scanner(System.in);
+	  TreePrinter treePrinter = new TreePrinter();
+	  while (s.hasNextLine()) {
+		  Node expr = Polish.parse(s.nextLine());
+		  System.out.println(expr.accept(treePrinter));
+	  }
+  }
 
 }

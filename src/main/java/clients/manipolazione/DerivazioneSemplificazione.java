@@ -1,5 +1,14 @@
 package clients.manipolazione;
 
+import node.Node;
+import parse.ParsingExcpetion;
+import parse.Polish;
+import print.BasicPrinter;
+import transform.Differentiate;
+import transform.Simplify;
+
+import java.util.Scanner;
+
 /** Classe contenete il client per verificare la derivazione delle espressioni. */
 public class DerivazioneSemplificazione {
 
@@ -14,6 +23,20 @@ public class DerivazioneSemplificazione {
    *
    * @param args non utilizzati.
    */
-  // public static void main(String[] args)
+  public static void main(String[] args) throws ParsingExcpetion {
+	  String variable = args[0];
+
+	  BasicPrinter printer = new BasicPrinter();
+	  Differentiate differentiate = new Differentiate(variable);
+	  Simplify simplify = new Simplify();
+
+	  Scanner s = new Scanner(System.in);
+	  while (s.hasNextLine()) {
+		  Node expr = Polish.parse(s.nextLine());
+		  Node derivative = expr.accept(differentiate);
+		  Node simplified = derivative.accept(simplify);
+		  System.out.println(simplified.accept(printer));
+	  }
+  }
 
 }
