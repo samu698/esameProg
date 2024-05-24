@@ -101,52 +101,45 @@ public class Rational implements Comparable<Rational> {
 
 	// The expression (n/d)^(e/r)
 	// Can be represented as the product of a rational number a and a rational number b to the exponent (e/r)
-	// such that (n/d)^(e/r) = a * (b ^ e) ^ (1/r) and a is maximized
+	// such that (n/d)^(e/r) = a * b ^ (e/r) and a is maximized
 	public PowResult pow(Rational exp) {
-		Rational base = exp.num >= 0 ? this : this.reciprocal();
-
-		// b^0 = 1 TODO: check b != 0
+		// b^0 = 1
 		if (exp.equalInt(0))
 			return new PowResult(fromInt(1), fromInt(1));
 
 		// b^1 = b
 		if (exp.equalInt(1))
-			return new PowResult(base, fromInt(1));
+			return new PowResult(this, fromInt(1));
 
-		// 0^e = 0 TODO check e != 0
-		if (base.equalInt(0))
-			return new PowResult(fromInt(0), fromInt(1));
+		boolean immaginaryRoot = exp.den % 2 == 0 && this.num < 0;
+		Optional<Integer> numRoot = !immaginaryRoot ?
+			Utils.perfectRoot(this.num, exp.den) :
+			Optional.empty();
+		Optional<Integer> denRoot = Utils.perfectRoot(this.den, exp.den);
 
-		Rational rationalPart;
-		Rational irrationalPart;
-		if (exp.den != 1) {
-			Optional<Integer> numRoot, denRoot;
-			if (base.num < 0 && exp.den % 2 == 0) {
-				// even root of negative number
-				numRoot = Optional.empty();
-				denRoot = Optional.empty();
-			} else {
-				numRoot = Utils.perfectRoot(base.num, exp.den);
-				denRoot = Utils.perfectRoot(base.den, exp.den);
-			}
+		int rationalNum = 1, rationalDen = 1;
+		int irrationalNum = 1, irrationalDen = 1;
 
+		if (numRoot.isPresent()) rationalNum = numRoot.get();
+		else irrationalNum = this.num;
 
-			int rationalNum = numRoot.orElse(1);
-			int irrationalNum = numRoot.isPresent() ? 1 : base.num;
-			int rationalDen = denRoot.orElse(1);
-			int irrationalDen = denRoot.isPresent() ? 1 : base.den;
+		if (denRoot.isPresent()) rationalDen = denRoot.get();
+		else irrationalDen = this.den;
 
-			rationalPart = new Rational(rationalNum, rationalDen);
-			irrationalPart = new Rational(irrationalNum, irrationalDen);
-		} else {
-			rationalPart = base;
-			irrationalPart = fromInt(1);
+		// Calculate the reciprocal of the rational part if the exponent is negative
+		if (exp.num < 0) {
+			int temp = rationalNum;
+			rationalNum = rationalDen;
+			rationalDen = temp;
 		}
 
-		rationalPart = new Rational(
-			Utils.pow(rationalPart.num, Math.abs(exp.num)),
-			Utils.pow(rationalPart.den, Math.abs(exp.num))
+		int exponent = exp.num >= 0 ? exp.num : -exp.num;
+		Rational rationalPart = fromNumDen(
+			Utils.pow(rationalNum, exponent),
+			Utils.pow(rationalDen, exponent)
 		);
+
+		Rational irrationalPart = fromNumDen(irrationalNum, irrationalDen);
 
 		return new PowResult(rationalPart, irrationalPart);
 	}
