@@ -9,14 +9,17 @@ import java.util.Stack;
 
 // Parser for polish notation
 public class Polish {
+	public final static String FORMAT_NAME = "Polish notation";
+
 	private Polish() {
 		assert false: "Utility class cannot be instantiated";
 	}
 
-	private static List<Node> getOperands(Stack<Node> operands)
+	private static List<Node> getOperands(Stack<Node> operands, String input)
 		throws ParsingExcpetion
 	{
-		assert operands.size() >= 2: "Make this an exception";
+		if (operands.size() < 2)
+			throw new ParsingExcpetion("Not enough operands", FORMAT_NAME, input);
 		return List.of(operands.pop(), operands.pop());
 	}
 
@@ -34,12 +37,13 @@ public class Polish {
 
 			// Try to parse an operator
 			Node innerNode = switch (part) {
-				case "+" -> new SumNode(getOperands(operands));
-				case "-" -> SumNode.fromSub(getOperands(operands));
-				case "*" -> new MulNode(getOperands(operands));
-				case "/" -> MulNode.fromDiv(getOperands(operands));
+				case "+" -> new SumNode(getOperands(operands, input));
+				case "-" -> SumNode.fromSub(getOperands(operands, input));
+				case "*" -> new MulNode(getOperands(operands, input));
+				case "/" -> MulNode.fromDiv(getOperands(operands, input));
 				case "^" -> {
-					assert operands.size() >= 2: "Make this an exception";
+					if (operands.size() < 2)
+						throw new ParsingExcpetion("Not enough operands", FORMAT_NAME, input);
 					yield new PowNode(operands.pop(), operands.pop());
 				}
 				default -> null;
@@ -58,15 +62,18 @@ public class Polish {
 
 			// Try to parse a number
 			try {
-				int value = Integer.parseInt(part);
+				long value = Long.parseLong(part);
 				Rational rat = Rational.fromInt(value);
 				operands.push(new NumberNode(rat));
 			} catch (NumberFormatException e) {
-				// TODO: throw parse exception
+				throw new ParsingExcpetion("Invalid number", FORMAT_NAME, input);
 			}
 		}
 
-		assert operands.size() == 1; // FIXME: Throw parse exception
+		if (operands.isEmpty())
+			throw new ParsingExcpetion("Cannot parse empty string", FORMAT_NAME, input);
+		if (operands.size() > 1)
+			throw new ParsingExcpetion("Too many operands", FORMAT_NAME, input);
 		return operands.pop();
 	}
 }

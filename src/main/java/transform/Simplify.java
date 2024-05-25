@@ -187,6 +187,35 @@ public class Simplify implements Visitor<Node> {
 
 		if (base instanceof NumberNode numBase) {
 			Rational.PowResult result = numBase.value().pow(exp);
+
+			if (result.irrationalPart.equalInt(1))
+				return new NumberNode(result.rationalPart);
+
+			Node resultNode;
+			// Calculate the reciprocal of the irrational base if it is less than one
+			if (result.irrationalPart.num == 1 && result.irrationalPart.den != 1) {
+				Rational baseReciprocal = result.irrationalPart.reciprocal();
+				Rational expOpposite = result.irrationalExp.opposite();
+				resultNode = new PowNode(new NumberNode(baseReciprocal), expOpposite);
+			} else {
+				resultNode = new PowNode(new NumberNode(result.irrationalPart), result.irrationalExp);
+			}
+
+			// Express fractions in the form 1/d as d^(-1)
+			if (result.rationalPart.num == 1 && result.rationalPart.den != 1) {
+				Rational reciprocal = result.rationalPart.reciprocal();
+				Node rationalNode = new PowNode(new NumberNode(reciprocal), new NumberNode(Rational.fromInt(-1)));
+				resultNode = new MulNode(List.of(rationalNode, resultNode));
+			} else if (!result.rationalPart.equalInt(1)){
+				resultNode = new MulNode(List.of(
+					new NumberNode(result.rationalPart),
+					resultNode
+				));
+			}
+
+			return resultNode;
+
+			/*
 			if (result.irrationalPart.equalInt(1)) return new NumberNode(result.rationalPart);
 
 			Node rationalNode;
@@ -201,12 +230,7 @@ public class Simplify implements Visitor<Node> {
 			}
 
 			Node irrationalNode;
-			// XXX: Begin testfix
-			int numAbs = result.irrationalPart.num;
-			numAbs = numAbs >= 0 ? numAbs : -numAbs;
-			boolean testFix = !result.irrationalPart.isInteger()&& numAbs > result.irrationalPart.den;
-			// XXX: End testfix
-			if (result.irrationalPart.num == 1 || testFix) {
+			if (result.irrationalPart.num == 1) {
 				Rational reciprocal = result.irrationalPart.reciprocal();
 				Rational expOpposite = node.exp().opposite();
 				irrationalNode = new PowNode(new NumberNode(reciprocal), expOpposite);
@@ -219,6 +243,7 @@ public class Simplify implements Visitor<Node> {
 			} else {
 				return irrationalNode;
 			}
+			*/
 		} else if (base instanceof PowNode powBase) {
 			// Flatten nested powers
 			return new PowNode(powBase.base(), exp.mul(powBase.exp()));

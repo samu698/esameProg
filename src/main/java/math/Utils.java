@@ -9,7 +9,7 @@ public class Utils {
 
 	// Implementation of the binary gcd algorithm
 	// Adapted from https://en.wikipedia.org/wiki/Binary_GCD_algorithm
-	public static int gcd(int a, int b) {
+	public static long gcd(long a, long b) {
 		// Get the absolute value for both operands
 		// gcd(a, b) = gcd(+-a, +-b)
 		a = a >= 0 ? a : -a;
@@ -21,8 +21,8 @@ public class Utils {
 
 		// gcd(2^i * a, 2^j * b) = 2^k * gcd(a, b)
 		// Remove factors of two in a and b
-		int i = Integer.numberOfTrailingZeros(a);
-		int j = Integer.numberOfTrailingZeros(b);
+		int i = Long.numberOfTrailingZeros(a);
+		int j = Long.numberOfTrailingZeros(b);
 		a >>= i;
 		b >>= j;
 		// Calculate how many factor of two a and b have in common
@@ -33,7 +33,7 @@ public class Utils {
 			assert b % 2 == 1: "b must be odd now";
 
 			if (a > b) {
-				int temp = b;
+				long temp = b;
 				b = a;
 				a = temp;
 			}
@@ -51,27 +51,27 @@ public class Utils {
 			}
 
 			// because b is even we can remove at least one factor of 2
-			b >>= Integer.numberOfTrailingZeros(b);
+			b >>= Long.numberOfTrailingZeros(b);
 		}
 	}
 
 	// Calculate least common multiple
-	public static int lcm(int a, int b) {
+	public static long lcm(long a, long b) {
 		// Remove common factors from the product of a and b
-		int lcm = a * b / gcd(a, b);
+		long lcm = a * b / gcd(a, b);
 		// Assure positive sign
 		return lcm >= 0 ? lcm : -lcm;
 	}
 
 	// Evaluates base^exp where exp > 0
 	// Implementation of Knuth's binary exponentiation algorithm (TAOCP Vol 2: 4.6.3)
-	public static int pow(int base, int exp)
+	public static long pow(long base, long exp)
 		throws IllegalArgumentException
 	{
 		if (exp < 0)
 			throw new IllegalArgumentException("Exponent cannot be negative");
 
-		int result = 1;
+		long result = 1;
 		while (exp != 0) {
 			if (exp % 2 == 1) result *= base;
 			exp /= 2;
@@ -81,7 +81,7 @@ public class Utils {
 		return result;
 	}
 
-	public static Optional<Integer> perfectRoot(int radicand, int degree)
+	public static Optional<Long> perfectRoot(long radicand, long degree)
 		throws IllegalArgumentException
 	{
 		boolean negative = radicand < 0;
@@ -92,7 +92,7 @@ public class Utils {
 		if (negative && degree % 2 == 0)
 			throw new IllegalArgumentException("Even roots of negative numbers are not real");
 
-		int root = (int)Math.round(Math.pow(radicand, 1.0 / degree));
+		long root = Math.round(Math.pow(radicand, 1.0 / degree));
 		if (pow(root, degree) == radicand) return Optional.of(negative ? -root : root);
 		return Optional.empty();
 	}

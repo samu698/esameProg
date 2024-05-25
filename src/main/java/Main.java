@@ -20,9 +20,9 @@ public class Main {
 		for (;;) {
 			Node expr = Polish.parse(s.nextLine());
 			System.out.print(expr.accept(treePrinter));
-			Node derivative = expr.accept(transform);
-			System.out.print(derivative.accept(treePrinter));
-			Node simplified = derivative.accept(new Simplify());
+			//Node derivative = expr.accept(transform);
+			//System.out.print(derivative.accept(treePrinter));
+			Node simplified = expr.accept(new Simplify());
 			System.out.print(simplified.accept(treePrinter));
 		}
 	}

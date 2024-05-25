@@ -78,7 +78,7 @@ public class Expand implements Visitor<Node> {
 
 		Node base = node.base().accept(this);
 		Node multipliedBase = base;
-		int copies = node.exp().num >= 0 ? node.exp().num : -node.exp().num;
+		int copies = (int)(node.exp().num >= 0 ? node.exp().num : -node.exp().num);
 		if (copies >= 2) {
 			List<Node> baseCopies = Collections.nCopies(copies, base);
 			multipliedBase = (new MulNode(baseCopies)).accept(this);
@@ -90,7 +90,7 @@ public class Expand implements Visitor<Node> {
 		}
 
 		// The new exponent is 1/d keeping the sign of the exponent
-		Rational newExp = Rational.fromNumDen(Integer.signum(node.exp().num), node.exp().den);
+		Rational newExp = Rational.fromNumDen(Long.signum(node.exp().num), node.exp().den);
 		return new PowNode(multipliedBase, newExp);
 	}
 }

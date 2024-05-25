@@ -61,7 +61,7 @@ public class StraighLine {
 
 			// Argument must be a number
 			try {
-				int value = Integer.parseInt(arguments[0]);
+				long value = Long.parseLong(arguments[0]);
 				return new NumberNode(Rational.fromInt(value));
 			} catch (NumberFormatException e) {
 				throw new ParsingExcpetion("Invalid syntax", FORMAT_NAME, input);
