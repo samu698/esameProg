@@ -60,7 +60,7 @@ ridurre il numero di nodi, definite induttivamente come segue.
   base è *razionale*, si tenta di ottenere una frazione: ad esempio $(3/4)^{-1}$
   si semplifica in $4/3$, così come $(4/9)^{3/2}$ si semplifica in $8/27$, ma se
   il numeratore o il numeratore elevati all'esponente non fossero razionali,
-  restano espressi come potenza, ad esempio $(5/9)^{1/2} = 3^{-1}\cdot 5^{1/2}$.
+  restano espressi come potenza, ad esempio $(5/9)^{1/2} = 1/3\cdot 5^{1/2}$.
 
 * I nodi **moltiplicazione** vengono semplificati attraverso varie
   trasformazioni: 

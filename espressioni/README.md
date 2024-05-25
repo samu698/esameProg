@@ -16,6 +16,16 @@ mentre i **nodi interni** sono di tre *tipi*
 
 dove $n > 0$, $e, e_1, e_2, \ldots e_n$ sono espressioni e $q\in \mathbf{Q}$.
 
+Per comodità assumeremo che i *razionali* siano sempre in **forma normale** che
+corrisponde a dire che:
+
+* il *denominatore* sia *positivo* e
+* il *numeratore* e il *denominatore* siano *coprimi tra loro*;
+
+questo significa che $\frac 3 {-6}$ (qualora dovesse emergere dalla
+*costruzione* o *manipolazione* descritte in seguito) sarà sempre riscritto come
+$\frac {-1} 2$.
+
 Tra i nodi vige un **ordine totale** $\preceq$ definito a partire dall'ordine
 tra i tipi di nodo (foglia, o interno) per cui 
 
