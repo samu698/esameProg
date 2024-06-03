@@ -50,7 +50,7 @@ public class Expand implements Visitor<Node> {
 		List<Node> terms = new ArrayList<>(lhsTerms.size() * rhsTerms.size());
 		for (Node lterm : lhsTerms)
 			for (Node rterm : rhsTerms)
-				terms.add(new MulNode(List.of(lterm, rterm)));
+				terms.add(new MulNode(lterm, rterm));
 
 		if (terms.size() == 1)
 			return terms.get(0);
@@ -123,10 +123,10 @@ public class Expand implements Visitor<Node> {
 		if (terms.length == 1) return terms[0];
 
 		final int last = terms.length - 1;
-		Node result = new MulNode(List.of(terms[last - 1], terms[last]));
+		Node result = new MulNode(terms[last - 1], terms[last]);
 
 		for (int i = last - 2; i >= 0; i--)
-			result = new MulNode(List.of(terms[i], result));
+			result = new MulNode(terms[i], result);
 
 		return result;
 	}

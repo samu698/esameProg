@@ -13,13 +13,17 @@ public record MulNode(List<Node> operands) implements Node {
 		this.operands = Collections.unmodifiableList(sortedOperands);
 	}
 
+	public MulNode(Node... operands) {
+		this(List.of(operands));
+	}
+
 	@Override
 	public <T> T accept(Visitor<T> visitor) {
 		return visitor.visit(this);
 	}
 
 	public static MulNode fromDiv(List<Node> operands) {
-		assert operands.size() >= 2; // TODO: should this be an exception
+		assert operands.size() >= 2;
 		List<Node> mulOperands = new ArrayList<>(operands.size());
 
 		Iterator<Node> iter = operands.iterator();
@@ -33,6 +37,10 @@ public record MulNode(List<Node> operands) implements Node {
 		}
 
 		return new MulNode(mulOperands);
+	}
+
+	public static MulNode fromDiv(Node... operands) {
+		return fromDiv(List.of(operands));
 	}
 
 	@Override

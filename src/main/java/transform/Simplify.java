@@ -88,7 +88,7 @@ public class Simplify implements Visitor<Node> {
 				operands.add(factor);
 				simplified.add(new MulNode(operands));
 			} else {
-				simplified.add(new MulNode(List.of(factor, term.getKey())));
+				simplified.add(new MulNode(factor, term.getKey()));
 			}
 		}
 
@@ -205,10 +205,10 @@ public class Simplify implements Visitor<Node> {
 			}
 
 			if (!result.rationalPart.equalInt(1)) {
-				resultNode = new MulNode(List.of(
+				resultNode = new MulNode(
 					new NumberNode(result.rationalPart),
 					resultNode
-				));
+				);
 			}
 
 			return resultNode;

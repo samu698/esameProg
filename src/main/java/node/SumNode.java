@@ -14,6 +14,10 @@ public record SumNode(List<Node> operands) implements Node {
 		this.operands = Collections.unmodifiableList(sortedOperands);
 	}
 
+	public SumNode(Node... operands) {
+		this(List.of(operands));
+	}
+
 	@Override
 	public <T> T accept(Visitor<T> visitor) {
 		return visitor.visit(this);
@@ -30,10 +34,14 @@ public record SumNode(List<Node> operands) implements Node {
 		final Node negOne = new NumberNode(Rational.fromInt(-1));
 		while (iter.hasNext()) {
 			// Multiply the subtraction terms by -1 to negate them
-			sumOperands.add(new MulNode(List.of(negOne, iter.next())));
+			sumOperands.add(new MulNode(negOne, iter.next()));
 		}
 
 		return new SumNode(sumOperands);
+	}
+
+	public static SumNode fromSub(Node... operands) {
+		return fromSub(List.of(operands));
 	}
 
 	@Override

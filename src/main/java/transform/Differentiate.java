@@ -119,8 +119,8 @@ public class Differentiate implements Visitor<Node> {
 
 		if (chain instanceof NumberNode numChain && numChain.value().equalInt(1))
 			// If the chain is one it can be elided
-			return new MulNode(List.of(coefficient, pow));
+			return new MulNode(coefficient, pow);
 		else
-			return new MulNode(List.of(coefficient, pow, chain));
+			return new MulNode(coefficient, pow, chain);
 	}
 }
