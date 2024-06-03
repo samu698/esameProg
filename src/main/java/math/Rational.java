@@ -24,7 +24,7 @@ public class Rational implements Comparable<Rational> {
 		throws IllegalArgumentException
 	{
 		if (den == 0)
-			throw new IllegalArgumentException("Math.Rational number denominator cannot be zero");
+			throw new IllegalArgumentException("rational number denominator cannot be zero");
 
 		// Assure that denominator sign is positive
 		if (den < 0) {
@@ -52,9 +52,12 @@ public class Rational implements Comparable<Rational> {
 		return this.den == 1 && this.num == value;
 	}
 
-	public Rational reciprocal() {
-		// FIXME: handle reciprocal of zero
-		// Assure that denominator sign is positive
+	public Rational reciprocal()
+		throws IllegalArgumentException
+	{
+		if (num == 0)
+			throw new IllegalArgumentException("Reciprocal of zero is undefined");
+
 		if (num < 0) return new Rational(-den, -num);
 		return new Rational(den, num);
 	}
@@ -117,31 +120,27 @@ public class Rational implements Comparable<Rational> {
 		if (exp.den % 2 == 0 && this.num < 0)
 			return new PowResult(fromInt(1), this, exp);
 
+		// Remove the negative sign from the exponent if the exponent is negative
+		final Rational base;
+		if (exp.num < 0) {
+			exp = exp.opposite();
+			base = this.reciprocal();
+		} else {
+			base = this;
+		}
+
 		// If the numerator or the denominator are perfect roots they can be extracted to the rational part
-		Optional<Long> numRoot = Utils.perfectRoot(this.num, exp.den);
-		Optional<Long> denRoot = Utils.perfectRoot(this.den, exp.den);
+		Optional<Long> numRoot = Utils.perfectRoot(base.num, exp.den);
+		Optional<Long> denRoot = Utils.perfectRoot(base.den, exp.den);
 
 		long rationalNum = 1, rationalDen = 1;
 		long irrationalNum = 1, irrationalDen = 1;
 
 		if (numRoot.isPresent()) rationalNum = numRoot.get();
-		else irrationalNum = this.num;
+		else irrationalNum = base.num;
 
 		if (denRoot.isPresent()) rationalDen = denRoot.get();
-		else irrationalDen = this.den;
-
-		// Calculate the reciprocal of the rational part if the exponent is negative
-		if (exp.num < 0) {
-			long temp = rationalNum;
-			rationalNum = rationalDen;
-			rationalDen = temp;
-		}
-
-		// Extract factor of -1 to rational part
-		if (irrationalNum < 0) {
-			irrationalNum = -irrationalNum;
-			rationalNum = -rationalNum;
-		}
+		else irrationalDen = base.den;
 
 		long exponent = exp.num >= 0 ? exp.num : -exp.num;
 		Rational rationalPart = fromNumDen(

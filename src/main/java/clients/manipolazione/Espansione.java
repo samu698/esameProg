@@ -4,6 +4,7 @@ import node.Node;
 import parse.ParsingExcpetion;
 import parse.Polish;
 import print.BasicPrinter;
+import print.TreePrinter;
 import transform.Expand;
 import transform.Simplify;
 
@@ -23,15 +24,13 @@ public class Espansione {
 	 * @param args non utilizzati.
 	 */
 
-	/*
-	 public static void main(String[] args) throws ParsingExcpetion {
-	 	Scanner s = new Scanner(System.in);
-	 	BasicPrinter printer = new BasicPrinter();
-	 	while (s.hasNextLine()) {
-	 		Node expr = Polish.parse(s.nextLine());
-	 		Node expanded = expr.accept(new Expand());
-	 		System.out.println(expanded.accept(printer));
-	 	}
-	 }
-	*/
+	public static void main(String[] args) throws ParsingExcpetion {
+		Scanner s = new Scanner(System.in);
+		BasicPrinter printer = new BasicPrinter();
+		while (s.hasNextLine()) {
+			Node expr = Polish.parse(s.nextLine());
+			Node expanded = expr.accept(new Expand());
+			System.out.println(expanded.accept(printer));
+		}
+	}
 }

@@ -153,8 +153,11 @@ public class Simplify implements Visitor<Node> {
 			simplified.add(new PowNode(term.getKey(), exp));
 		}
 
-		if (simplified.isEmpty()) return new NumberNode(Rational.fromInt(0));
+		// All the terms have been simplified return one
+		if (simplified.isEmpty()) return new NumberNode(Rational.fromInt(1));
+		// If there is only one term return it
 		if (simplified.size() == 1) return simplified.get(0);
+		// Else, construct a multiplication of all the simplified terms
 		return new MulNode(simplified);
 	}
 
@@ -201,12 +204,7 @@ public class Simplify implements Visitor<Node> {
 				resultNode = new PowNode(new NumberNode(result.irrationalPart), result.irrationalExp);
 			}
 
-			// Express fractions in the form 1/d as d^(-1)
-			if (result.rationalPart.num == 1 && result.rationalPart.den != 1) {
-				Rational reciprocal = result.rationalPart.reciprocal();
-				Node rationalNode = new PowNode(new NumberNode(reciprocal), new NumberNode(Rational.fromInt(-1)));
-				resultNode = new MulNode(List.of(rationalNode, resultNode));
-			} else if (!result.rationalPart.equalInt(1)){
+			if (!result.rationalPart.equalInt(1)) {
 				resultNode = new MulNode(List.of(
 					new NumberNode(result.rationalPart),
 					resultNode
@@ -214,36 +212,6 @@ public class Simplify implements Visitor<Node> {
 			}
 
 			return resultNode;
-
-			/*
-			if (result.irrationalPart.equalInt(1)) return new NumberNode(result.rationalPart);
-
-			Node rationalNode;
-			if (result.rationalPart.num == 1 && result.rationalPart.den != 1) {
-				Rational reciprocal = result.rationalPart.reciprocal();
-				rationalNode = new PowNode(new NumberNode(reciprocal), new NumberNode(Rational.fromInt(-1)));
-			} else if (!result.rationalPart.equalInt(1)) {
-				rationalNode = new NumberNode(result.rationalPart);
-			} else {
-				// If the rational coefficient is one it can be elided
-				rationalNode = null;
-			}
-
-			Node irrationalNode;
-			if (result.irrationalPart.num == 1) {
-				Rational reciprocal = result.irrationalPart.reciprocal();
-				Rational expOpposite = node.exp().opposite();
-				irrationalNode = new PowNode(new NumberNode(reciprocal), expOpposite);
-			} else {
-				irrationalNode = new PowNode(new NumberNode(result.irrationalPart), node.exp());
-			}
-
-			if (rationalNode != null) {
-				return new MulNode(List.of(rationalNode, irrationalNode));
-			} else {
-				return irrationalNode;
-			}
-			*/
 		} else if (base instanceof PowNode powBase) {
 			// Flatten nested powers
 			return new PowNode(powBase.base(), exp.mul(powBase.exp()));

@@ -1,8 +1,10 @@
 import math.Rational;
 import math.Utils;
 import node.Node;
+import node.Visitor;
 import parse.ParsingExcpetion;
 import parse.Polish;
+import print.BasicPrinter;
 import print.TreePrinter;
 import transform.Differentiate;
 import transform.Expand;
@@ -14,7 +16,7 @@ public class Main {
 	public static void main(String[] args) throws ParsingExcpetion {
 		TreePrinter treePrinter = new TreePrinter();
 		//Differentiate transform = new Differentiate("x");
-		Expand transform = new Expand();
+		Visitor<Node> transform = new Simplify();
 
 		Scanner s = new Scanner(System.in);
 		for (;;) {
@@ -22,8 +24,8 @@ public class Main {
 			System.out.print(expr.accept(treePrinter));
 			//Node derivative = expr.accept(transform);
 			//System.out.print(derivative.accept(treePrinter));
-			Node simplified = expr.accept(new Simplify());
-			System.out.print(simplified.accept(treePrinter));
+			Node simplified = expr.accept(transform);
+			System.out.println(simplified.accept(new BasicPrinter()));
 		}
 	}
 }

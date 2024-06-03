@@ -3,10 +3,7 @@ package transform;
 import math.Rational;
 import node.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class Expand implements Visitor<Node> {
 	@Override
@@ -68,29 +65,69 @@ public class Expand implements Visitor<Node> {
 			// TODO: check base != 0
 			return new NumberNode(Rational.fromInt(1));
 
+		Node base = node.base().accept(this);
+
 		// b^1 = b
 		if (node.exp().equalInt(1))
-			return node.base();
+			return base;
 
-		// If the numerator is one the power cannot be expanded
-		if (node.exp().num == 1)
-			return node;
+		int repetitions = (int)node.exp().num;
+		if (repetitions < 0) repetitions = -repetitions;
 
-		Node base = node.base().accept(this);
-		Node multipliedBase = base;
-		int copies = (int)(node.exp().num >= 0 ? node.exp().num : -node.exp().num);
-		if (copies >= 2) {
-			List<Node> baseCopies = Collections.nCopies(copies, base);
-			multipliedBase = (new MulNode(baseCopies)).accept(this);
+		final List<Node> expandedTerms = new ArrayList<>();
+		if (base instanceof SumNode sumBase) {
+			List<Node> terms = sumBase.operands();
+
+			int[] indices = new int[repetitions];
+			int pos = repetitions - 1;
+			Node[] result = new Node[repetitions];
+			Arrays.fill(result, terms.get(0));
+
+			outer: for (;;) {
+				expandedTerms.add(makeTerm(result));
+				indices[pos]++;
+				while (indices[pos] >= terms.size()) {
+					indices[pos] = 0;
+					result[pos] = terms.get(0);
+					if (pos-- == 0) break outer;
+					indices[pos]++;
+				}
+				result[pos] = terms.get(indices[pos]);
+				pos = repetitions - 1;
+			}
 		}
+		else if (repetitions > 1) {
+			expandedTerms.add(new MulNode(Collections.nCopies(repetitions, base)));
+		} else {
+			expandedTerms.add(base);
+		}
+
+		Node expandedBase;
+		if (expandedTerms.size() > 1) expandedBase = new SumNode(expandedTerms);
+		else expandedBase = expandedTerms.get(0);
 
 		if (node.exp().isInteger() && node.exp().num >= 0) {
 			// Remove the exponent because the base has been expanded
-			return multipliedBase;
+			return expandedBase;
 		}
 
 		// The new exponent is 1/d keeping the sign of the exponent
 		Rational newExp = Rational.fromNumDen(Long.signum(node.exp().num), node.exp().den);
-		return new PowNode(multipliedBase, newExp);
+		return new PowNode(expandedBase, newExp);
+	}
+
+	private Node makeTerm(Node[] terms) {
+		assert terms.length > 0;
+
+		// If there is only one term return it as it is
+		if (terms.length == 1) return terms[0];
+
+		final int last = terms.length - 1;
+		Node result = new MulNode(List.of(terms[last - 1], terms[last]));
+
+		for (int i = last - 2; i >= 0; i--)
+			result = new MulNode(List.of(terms[i], result));
+
+		return result;
 	}
 }
