@@ -187,31 +187,27 @@ public class Simplify implements Visitor<Node> {
 		}
 
 		if (base instanceof NumberNode numBase) {
-			Rational.PowResult result = numBase.value().pow(exp);
+			// Return the result of the power, if the result of the operation is rational
+			Optional<Rational> rationalPow = numBase.value().pow(exp);
+			if (rationalPow.isPresent())
+				return new NumberNode(rationalPow.get());
 
-			if (result.irrationalPart.equalInt(1))
-				return new NumberNode(result.rationalPart);
-
-			Node resultNode;
-			// Calculate the reciprocal of the irrational base if it is less than one
-			if (result.irrationalPart.num == 1 && result.irrationalPart.den != 1) {
-				Rational baseReciprocal = result.irrationalPart.reciprocal();
-				Rational expOpposite = result.irrationalExp.opposite();
-				resultNode = new PowNode(new NumberNode(baseReciprocal), expOpposite);
+			// If operation cannot be performed return the node by simplifying only the base
+			if (exp.num < 0) {
+				// Calculate the reciprocal of the base if the exponent is negative
+				Node reciprocalBase = new NumberNode(numBase.value().reciprocal());
+				return new PowNode(reciprocalBase, exp.opposite());
 			} else {
-				resultNode = new PowNode(new NumberNode(result.irrationalPart), result.irrationalExp);
+				return new PowNode(numBase, exp);
 			}
-
-			if (!result.rationalPart.equalInt(1)) {
-				resultNode = new MulNode(
-					new NumberNode(result.rationalPart),
-					resultNode
-				);
-			}
-
-			return resultNode;
 		} else if (base instanceof PowNode powBase) {
 			// Flatten nested powers
+			Rational resultExp = exp.mul(powBase.exp());
+			if (exp.num < 0 && powBase.base() instanceof NumberNode numBase) {
+				Node reciprocalBase = new NumberNode(numBase.value().reciprocal());
+				return new PowNode(reciprocalBase, resultExp.opposite());
+			}
+
 			return new PowNode(powBase.base(), exp.mul(powBase.exp()));
 		}
 

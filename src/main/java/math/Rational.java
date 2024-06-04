@@ -1,5 +1,6 @@
 package math;
 
+import java.lang.management.OperatingSystemMXBean;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
@@ -188,58 +189,6 @@ public class Rational implements Comparable<Rational> {
 	}
 
 	/**
-	 * <p>A result of pow between two rationals.</p>
-	 * <p>
-	 *     AF: The result of the operation b^e where both b and e are rational.<br>
-	 *     The result of b^e is expressed in the form b^e = R * I^E, where:
-	 *     <ul>
-	 *         <li>R is the rationalPart, the maximum rational coefficient of the value b^e.</li>
-	 *         <li>I is the irrationalPart, the part of the base that cannot be expressed as a rational.</li>
-	 *         <li>E is the irrationalExp, the exponent of I in the form of [+-]1/x.</li>
-	 *     </ul>
-	 * <p>
-	 *     REQUIREMENTS:
-	 *     <ul>
-	 *         <li>All the rational components of the result must be in the rationalPart.</li>
-	 *         <li>The irrationalExp must be in the form of [+-]1/x.</li>
-	 *     </ul>
-	 * <p>MUTABILITY: This class is immutable.</p>
-	 * <p>NOTES: This class cannot be a record because the constructor needs to be private.</p>
-	 * @see Rational#pow(Rational)
-	 */
-	public static class PowResult {
-		/** The rational part R */
-		public final Rational rationalPart;
-		/** The irrational part I */
-		public final Rational irrationalPart;
-		/** The irrational exponent E */
-		public final Rational irrationalExp;
-
-		/**
-		 * <p>Partial constructor for a PowResult.</p>
-		 * <p>
-		 *     REQUIREMENTS:
-		 *     <ul>
-		 *         <li>All of the class invariants must be respected.</li>
-		 *         <li>This constructor should only be called by {@link Rational#pow(Rational)}.</li>
-		 *         <li>All the parameters must be not null.</li>
-		 *     </ul>
-		 * <p>NOTES: The invariants {@link Rational#pow(Rational)} must uphold the invariants.</p>
-		 * @param rationalPart The rational part R.
-		 * @param irrationalPart The irrational part I.
-		 * @param irrationalExp The irrational exponent E.
-		 * @throws NullPointerException If any of the parameters is null.
-		 */
-		private PowResult(Rational rationalPart, Rational irrationalPart, Rational irrationalExp)
-			throws NullPointerException
-		{
-			this.rationalPart = Objects.requireNonNull(rationalPart);
-			this.irrationalPart = Objects.requireNonNull(irrationalPart);
-			this.irrationalExp = Objects.requireNonNull(irrationalExp);
-		}
-	}
-
-	/**
 	 * <p>EFFECTS: Compute the result of the pow of two rationals in the form of a {@link PowResult}</p>
 	 * <p>
 	 *     REQUIREMENTS:
@@ -251,22 +200,22 @@ public class Rational implements Comparable<Rational> {
 	 * @return The result in thje form of a {@link PowResult}
 	 * @throws NullPointerException If exp is null.
 	 */
-	public PowResult pow(Rational exp)
+	public Optional<Rational> pow(Rational exp)
 		throws NullPointerException
 	{
 		Objects.requireNonNull(exp);
 
 		// b^0 = 1 TODO: check 0^0
 		if (exp.equalInt(0))
-			return new PowResult(fromInt(1), fromInt(1), fromInt(1));
+			return Optional.of(new Rational(1, 1));
 
 		// b^1 = b
 		if (exp.equalInt(1))
-			return new PowResult(this, fromInt(1), fromInt(1));
+			return Optional.of(this);
 
 		// Ignore complex results
 		if (exp.den % 2 == 0 && this.num < 0)
-			return new PowResult(fromInt(1), this, exp);
+			return Optional.empty();
 
 		// Remove the negative sign from the exponent if the exponent is negative
 		// by computing the reciprocal of the base
@@ -282,32 +231,16 @@ public class Rational implements Comparable<Rational> {
 		Optional<Long> numRoot = Utils.perfectRoot(base.num, exp.den);
 		Optional<Long> denRoot = Utils.perfectRoot(base.den, exp.den);
 
-		long rationalNum = 1, rationalDen = 1;
-		long irrationalNum = 1, irrationalDen = 1;
-
-		// Extract the numerator to the rational part, if possible
-		if (numRoot.isPresent()) rationalNum = numRoot.get();
-		else irrationalNum = base.num;
-
-		// Extract the denominator to the rational part, if possible
-		if (denRoot.isPresent()) rationalDen = denRoot.get();
-		else irrationalDen = base.den;
-
 		long exponent = exp.num >= 0 ? exp.num : -exp.num;
-		Rational rationalPart = fromNumDen(
-			Utils.pow(rationalNum, exponent),
-			Utils.pow(rationalDen, exponent)
-		);
+		if (numRoot.isPresent() && denRoot.isPresent()) {
+			Rational value = fromNumDen(
+				Utils.pow(numRoot.get(), exponent),
+				Utils.pow(denRoot.get(), exponent)
+			);
+			return Optional.of(value);
+		}
 
-		Rational irrationalPart = fromNumDen(
-			Utils.pow(irrationalNum, exponent),
-			Utils.pow(irrationalDen, exponent)
-		);
-
-		// Remove the numerator for the irrationalExp.
-		Rational irrationalExp = new Rational(Long.signum(exp.num), exp.den);
-
-		return new PowResult(rationalPart, irrationalPart, irrationalExp);
+		return Optional.empty();
 	}
 
 	@Override
