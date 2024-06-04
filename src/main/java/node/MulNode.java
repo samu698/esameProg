@@ -4,26 +4,79 @@ import math.Rational;
 
 import java.util.*;
 
+/**
+ * <p>The {@link Node} representing a multiplication operation.
+ * <p>
+ *     AF: This represents the multiplication operation between all the operands.
+ *     The order of the operands does not matter because multiplication is commutative.
+ *     Given the list of operands op_n this represents op_1 * op_2 * op_3 ...
+ * <p>
+ *     REQUIREMENTS:
+ *     <ul>
+ *         <li>operands must be non-null.</li>
+ *         <li>operands must not contain a null element.</li>
+ *         <li>The size of operands must be greater than one.</li>
+ *         <li>operands must be sorted using the total order relation defined in {@link Node}.</li>
+ *         <li>The operands list must be immutable.</li>
+ *     </ul>
+ * @param operands The operands of the multiplication.
+ */
 public record MulNode(List<Node> operands) implements Node {
 	public MulNode(List<Node> operands) {
 		Objects.requireNonNull(operands);
+		for (Node operand : operands) Objects.requireNonNull(operand);
+
 		assert operands.size() >= 2;
+
 		List<Node> sortedOperands = new ArrayList<>(operands);
 		Collections.sort(sortedOperands);
 		this.operands = Collections.unmodifiableList(sortedOperands);
 	}
 
-	public MulNode(Node... operands) {
+	/**
+	 * Convenience constructor using varargs, allows to avoid calling {@link List#of}.
+	 * <p>EFFECT: constructs a {@link MulNode} using the provided operands</p>
+	 * <p>
+	 *     REQUIREMENTS:
+	 *     <ul>
+	 *         <li>operands must be non-null</li>
+	 *         <li>operands must not contain a null element.</li>
+	 *         <li>The size of operands must be greater than one.</li>
+	 *     </ul>
+	 * @param operands The operands of the multiplication
+	 * @throws NullPointerException If any of the operands is null.
+	 */
+	public MulNode(Node... operands)
+		throws NullPointerException
+	{
 		this(List.of(operands));
 	}
 
-	@Override
-	public <T> T accept(Visitor<T> visitor) {
-		return visitor.visit(this);
-	}
+	/**
+	 * <p>
+	 *     EFFECT: constructs a division represented as a multiplication.
+	 *     A division A / B / C can be expressed as A * (B^-1) * (C^-1),
+	 *     so this method will leave the first operand unchanged and modify the other operands to
+	 *     the form (X^-1) and construct a {@link MulNode} of all the operands.
+	 * <p>
+	 *     REQUIREMENTS:
+	 *     <ul>
+	 *         <li>operands must be non-null</li>
+	 *         <li>operands must not contain a null element.</li>
+	 *         <li>The size of operands must be greater than one.</li>
+	 *     </ul>
+	 * @param operands The operands of the division
+	 * @return A division represented using multiplication.
+	 * @throws NullPointerException If any of the operands is null.
+	 */
+	public static MulNode fromDiv(List<Node> operands)
+		throws NullPointerException
+	{
+		Objects.requireNonNull(operands);
+		for (Node operand : operands) Objects.requireNonNull(operand);
 
-	public static MulNode fromDiv(List<Node> operands) {
 		assert operands.size() >= 2;
+
 		List<Node> mulOperands = new ArrayList<>(operands.size());
 
 		Iterator<Node> iter = operands.iterator();
@@ -39,8 +92,9 @@ public record MulNode(List<Node> operands) implements Node {
 		return new MulNode(mulOperands);
 	}
 
-	public static MulNode fromDiv(Node... operands) {
-		return fromDiv(List.of(operands));
+	@Override
+	public <T> T transform(Visitor<T> visitor) {
+		return visitor.visit(this);
 	}
 
 	@Override

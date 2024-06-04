@@ -33,9 +33,9 @@ public class DerivazioneSemplificazione {
 	  Scanner s = new Scanner(System.in);
 	  while (s.hasNextLine()) {
 		  Node expr = Polish.parse(s.nextLine());
-		  Node derivative = expr.accept(differentiate);
-		  Node simplified = derivative.accept(simplify);
-		  System.out.println(simplified.accept(printer));
+		  Node derivative = expr.transform(differentiate);
+		  Node simplified = derivative.transform(simplify);
+		  System.out.println(simplified.transform(printer));
 	  }
   }
 

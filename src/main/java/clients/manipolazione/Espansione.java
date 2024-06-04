@@ -4,9 +4,7 @@ import node.Node;
 import parse.ParsingExcpetion;
 import parse.Polish;
 import print.BasicPrinter;
-import print.TreePrinter;
 import transform.Expand;
-import transform.Simplify;
 
 import java.util.Scanner;
 
@@ -29,8 +27,8 @@ public class Espansione {
 		BasicPrinter printer = new BasicPrinter();
 		while (s.hasNextLine()) {
 			Node expr = Polish.parse(s.nextLine());
-			Node expanded = expr.accept(new Expand());
-			System.out.println(expanded.accept(printer));
+			Node expanded = expr.transform(new Expand());
+			System.out.println(expanded.transform(printer));
 		}
 	}
 }

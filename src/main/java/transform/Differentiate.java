@@ -7,12 +7,37 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * <p>A Transformer for {@link Node} that computes the derivative with respect to the selected variable.</p>
+ * <p>REQUIREMENTS:
+ * <ul>
+ *     <li>variable must be non-null not empty and contain only upper or lowercase letters.</li>
+ *     <li>see {@link Visitor} for the additional requirements.</li>
+ * </ul>
+ *
+ * <p>MUTABILITY: This class is immutable. respecting the mutability requirement of {@link Visitor}.</p>
+ */
 public class Differentiate implements Visitor<Node> {
-	private final String variable;
+	/** The variable with respect to compute the derivative. */
+	public final String variable;
 
+	/**
+	 * <p>EFFECTS: Constructs a new instance of {@link Differentiate}</p>
+	 * <p>
+	 *     REQUIREMENTS:
+	 *     <ul>
+	 *         <li>variable must be non-null.</li>
+	 *         <li>variable must not be empty.</li>
+	 *         <li>variable must contain only upper or lowercase letters.</li>
+	 *     </ul>
+	 * @param variable The variable with respect to differentiate.
+	 * @throws IllegalArgumentException If variable is empty or contains illegal chars.
+	 * @throws NullPointerException If variable is null.
+	 */
 	public Differentiate(String variable)
-		throws IllegalArgumentException
+		throws IllegalArgumentException, NullPointerException
 	{
+		Objects.requireNonNull(variable);
 		if (!variable.matches("^[a-zA-Z]+$"))
 			throw new IllegalArgumentException("Invalid variable name");
 		this.variable = Objects.requireNonNull(variable);
@@ -34,7 +59,7 @@ public class Differentiate implements Visitor<Node> {
 	public Node visit(SumNode node) {
 		List<Node> derivatives = new ArrayList<>(node.operands().size());
 		for (Node expr : node.operands()) {
-			Node derivative = expr.accept(this);
+			Node derivative = expr.transform(this);
 			// Don't add zero terms
 			if (derivative instanceof NumberNode num && num.value().equalInt(0))
 				continue;
@@ -58,7 +83,7 @@ public class Differentiate implements Visitor<Node> {
 
 		// Split constant factors, from variable factors
 		for (Node expr : node.operands()) {
-			Node derivative = expr.accept(this);
+			Node derivative = expr.transform(this);
 
 			if (derivative instanceof NumberNode numDerivative && numDerivative.value().equalInt(0)) {
 				constantTerms.add(expr);
@@ -104,9 +129,9 @@ public class Differentiate implements Visitor<Node> {
 
 		//  f(x)^1 = f(x), so (f(x)^1)' = f'(x)
 		if (node.exp().equalInt(1))
-			return node.base().accept(this);
+			return node.base().transform(this);
 
-		Node chain = node.base().accept(this);
+		Node chain = node.base().transform(this);
 
 		if (chain instanceof NumberNode numChain && numChain.value().equalInt(0)) {
 			// The derivative of the base is constant, so the entire exponentiation is constant

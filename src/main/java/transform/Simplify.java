@@ -1,20 +1,18 @@
 package transform;
 
-// Possible simplifications
-// 1. Evaluate terms equal to a rational
-// 6. Multiply rationals in product
-// 7. Group same terms in product and sum exponents
-// 8. Sum rational in sum
-// 9. Group same terms in sums and sum factors
-
 import math.Rational;
 import node.*;
 
 import java.util.*;
 
+/**
+ * <p>
+ *     A transformer that simplifies a {@link Node},
+ *     TODO: explain all simplifications
+ * <p>REQUIREMENTS: see {@link Visitor} for the requirements.</p>
+ * <p>MUTABILITY: This class has no state and it cannot mutate, respecting the mutability requirements of {@link Visitor}.</p>
+ */
 public class Simplify implements Visitor<Node> {
-	public Simplify() {}
-
 	@Override
 	public Node visit(NumberNode node) {
 		return node;
@@ -30,7 +28,7 @@ public class Simplify implements Visitor<Node> {
 		List<Node> simplified = new ArrayList<>(node.operands().size());
 		for (Node operand : node.operands()) {
 			// Simplify each child node
-			Node s = operand.accept(this);
+			Node s = operand.transform(this);
 			// Flatten nested sums
 			if (s instanceof SumNode sum) {
 				simplified.addAll(sum.operands());
@@ -102,7 +100,7 @@ public class Simplify implements Visitor<Node> {
 		List<Node> simplified = new ArrayList<>(node.operands().size());
 		for (Node operand : node.operands()) {
 			// Simplify each child node
-			Node s = operand.accept(this);
+			Node s = operand.transform(this);
 			// Flatten nested products
 			if (s instanceof MulNode mul) {
 				simplified.addAll(mul.operands());
@@ -167,7 +165,7 @@ public class Simplify implements Visitor<Node> {
 	// 5. Power of fraction: remove irrational (5/9)^(1/2) = 3^-1 * 5^(1/2)
 	@Override
 	public Node visit(PowNode node) {
-		Node base = node.base().accept(this);
+		Node base = node.base().transform(this);
 		Rational exp = node.exp();
 
 		// b^0 = 1 TODO: check b != 0

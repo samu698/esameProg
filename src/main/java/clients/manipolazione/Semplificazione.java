@@ -26,8 +26,8 @@ public class Semplificazione {
 	  BasicPrinter printer = new BasicPrinter();
 	  while (s.hasNextLine()) {
 		  Node expr = Polish.parse(s.nextLine());
-		  Node simplified = expr.accept(new Simplify());
-		  System.out.println(simplified.accept(printer));
+		  Node simplified = expr.transform(new Simplify());
+		  System.out.println(simplified.transform(printer));
 	  }
   }
 

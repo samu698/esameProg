@@ -2,13 +2,22 @@ package math;
 
 import java.util.Optional;
 
+/** Utility class for basic mathematical operations */
 public class Utils {
+	/** Constructor to the utility class that must never be called */
 	private Utils() {
 		assert false: "Utility class cannot be instantiated";
 	}
 
-	// Implementation of the binary gcd algorithm
-	// Adapted from https://en.wikipedia.org/wiki/Binary_GCD_algorithm
+	/**
+	 * <p>EFFECTS: Computes the gcd between a and b.</p>
+	 * <p>NOTES: This is an implementation of the <a href="https://en.wikipedia.org/wiki/Binary_GCD_algorithm">binary GCD algorithm</a></p>
+	 * @param a The first operand of the gcd.
+	 * @param b The second operand of the gcd.
+	 * @return The gcd of a and b.
+	 * @see <a href="https://en.wikipedia.org/wiki/Greatest_common_divisor">GCD</a>
+	 * @see <a href="https://en.wikipedia.org/wiki/Binary_GCD_algorithm">Binary GCD algorithm</a>
+	 */
 	public static long gcd(long a, long b) {
 		// Get the absolute value for both operands
 		// gcd(a, b) = gcd(+-a, +-b)
@@ -55,7 +64,14 @@ public class Utils {
 		}
 	}
 
-	// Calculate least common multiple
+	/**
+	 * <p>EFFECTS: Computes the lcm between a and b.</p>
+	 * <p>NOTES: This method uses the {@link Utils#gcd(long, long)} method.</p>
+	 * @param a The first operand of the lcm.
+	 * @param b The second operand of the lcm.
+	 * @return The lcm of a and b.
+	 * @see <a href="https://en.wikipedia.org/wiki/Least_common_multiple">LCM</a>
+	 */
 	public static long lcm(long a, long b) {
 		// Remove common factors from the product of a and b
 		long lcm = a * b / gcd(a, b);
@@ -63,8 +79,15 @@ public class Utils {
 		return lcm >= 0 ? lcm : -lcm;
 	}
 
-	// Evaluates base^exp where exp > 0
-	// Implementation of Knuth's binary exponentiation algorithm (TAOCP Vol 2: 4.6.3)
+	/**
+	 * <p>EFFECTS: Computes the result of base^exp, where exp &gt; 0.</p>
+	 * <p>REQUIREMENTS: exp > 0.</p>
+	 * <p>NOTES: This is an implementation of Knuth's binary exponentiation algorithm (TAOCP Vol 2: 4.6.3).</p>
+	 * @param base The base of the power.
+	 * @param exp The exponent.
+	 * @return The result of base^exp
+	 * @throws IllegalArgumentException If exp &lt; 0.
+	 */
 	public static long pow(long base, long exp)
 		throws IllegalArgumentException
 	{
@@ -81,6 +104,19 @@ public class Utils {
 		return result;
 	}
 
+	/**
+	 * <p>EFFECTS: Calculates if a the degree-th root of radicand is perfect and if it is returns the root.</p>
+	 * <p>
+	 *     REQUIREMENTS:
+	 *     <ul>
+	 *         <li>The degree must be positive and not zero.</li>
+	 *         <li>The radicand must be non-negative if the degree is even.</li>
+	 *     </ul>
+	 * @param radicand The radicand of the root.
+	 * @param degree The degree of the root.
+	 * @return And {@link Optional} that contains the root if it is perfect.
+	 * @throws IllegalArgumentException If any of the requirements is not satisfied.
+	 */
 	public static Optional<Long> perfectRoot(long radicand, long degree)
 		throws IllegalArgumentException
 	{
@@ -92,8 +128,12 @@ public class Utils {
 		if (negative && degree % 2 == 0)
 			throw new IllegalArgumentException("Even roots of negative numbers are not real");
 
+		// Calculate the approximate root using floating point math.
 		long root = Math.round(Math.pow(radicand, 1.0 / degree));
+
+		// Check if approximate root is a perfect root.
 		if (pow(root, degree) == radicand) return Optional.of(negative ? -root : root);
+
 		return Optional.empty();
 	}
 }

@@ -29,6 +29,6 @@ public class ProgrammaLineare {
 		  if (line.isBlank()) break;
 		  parser.parse(line);
 	  }
-	  System.out.println(parser.getLast().accept(new BasicPrinter()));
+	  System.out.println(parser.getLast().transform(new BasicPrinter()));
   }
 }

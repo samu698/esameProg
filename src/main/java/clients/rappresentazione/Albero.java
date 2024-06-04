@@ -3,7 +3,6 @@ package clients.rappresentazione;
 import node.Node;
 import parse.ParsingExcpetion;
 import parse.Polish;
-import print.BasicPrinter;
 import print.TreePrinter;
 
 import java.util.Scanner;
@@ -25,7 +24,7 @@ public class Albero {
 	  TreePrinter treePrinter = new TreePrinter();
 	  while (s.hasNextLine()) {
 		  Node expr = Polish.parse(s.nextLine());
-		  System.out.println(expr.accept(treePrinter));
+		  System.out.println(expr.transform(treePrinter));
 	  }
   }
 

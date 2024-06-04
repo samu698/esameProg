@@ -3,7 +3,6 @@ package node;
 import math.Rational;
 import transform.Simplify;
 
-import java.util.Arrays;
 import java.util.Objects;
 
 public record PowNode(Node base, Rational exp) implements Node {
@@ -21,7 +20,7 @@ public record PowNode(Node base, Rational exp) implements Node {
 	private static Rational simplifyToRational(Node exp)
 		throws IllegalArgumentException
 	{
-		if (exp.accept(new Simplify()) instanceof NumberNode numExp) {
+		if (exp.transform(new Simplify()) instanceof NumberNode numExp) {
 			return numExp.value();
 		} else {
 			throw new IllegalArgumentException("Exponent cannot be converted to a rational number");
@@ -30,7 +29,7 @@ public record PowNode(Node base, Rational exp) implements Node {
 
 
 	@Override
-	public <T> T accept(Visitor<T> visitor) {
+	public <T> T transform(Visitor<T> visitor) {
 		return visitor.visit(this);
 	}
 

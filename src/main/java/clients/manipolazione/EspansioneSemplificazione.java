@@ -30,9 +30,9 @@ public class EspansioneSemplificazione {
 		BasicPrinter printer = new BasicPrinter();
 		while (s.hasNextLine()) {
 			Node expr = Polish.parse(s.nextLine());
-			Node expanded = expr.accept(new Expand());
-			Node simplified = expanded.accept(new Simplify());
-			System.out.println(simplified.accept(printer));
+			Node expanded = expr.transform(new Expand());
+			Node simplified = expanded.transform(new Simplify());
+			System.out.println(simplified.transform(printer));
 		}
 	}
 }

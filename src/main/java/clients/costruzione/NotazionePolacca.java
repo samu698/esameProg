@@ -28,7 +28,7 @@ public class NotazionePolacca {
 		BasicPrinter basicPrinter = new BasicPrinter();
 		while (s.hasNextLine()) {
 			Node expr = Polish.parse(s.nextLine());
-			System.out.println(expr.accept(basicPrinter));
+			System.out.println(expr.transform(basicPrinter));
 		}
 	}
 
