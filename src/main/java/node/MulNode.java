@@ -19,9 +19,21 @@ import java.util.*;
  *         <li>operands must be sorted using the total order relation defined in {@link Node}.</li>
  *         <li>The operands list must be immutable.</li>
  *     </ul>
+ * <p>MUTABILITY: This class is immutable, as per {@link Node} requirement.</p>
  * @param operands The operands of the multiplication.
  */
 public record MulNode(List<Node> operands) implements Node {
+	/**
+	 * Constructor for {@link MulNode}.
+	 * <p>
+	 *     REQUIREMENTS:
+	 *     <ul>
+	 *         <li>operands must be non-null</li>
+	 *         <li>operands must not contain a null element.</li>
+	 *         <li>The size of operands must be greater than one.</li>
+	 *     </ul>
+	 * @param operands The operands of the multiplication
+	 */
 	public MulNode(List<Node> operands) {
 		Objects.requireNonNull(operands);
 		for (Node operand : operands) Objects.requireNonNull(operand);
@@ -39,11 +51,10 @@ public record MulNode(List<Node> operands) implements Node {
 	 * <p>
 	 *     REQUIREMENTS:
 	 *     <ul>
-	 *         <li>operands must be non-null</li>
 	 *         <li>operands must not contain a null element.</li>
 	 *         <li>The size of operands must be greater than one.</li>
 	 *     </ul>
-	 * @param operands The operands of the multiplication
+	 * @param operands The operands of the multiplication.
 	 * @throws NullPointerException If any of the operands is null.
 	 */
 	public MulNode(Node... operands)

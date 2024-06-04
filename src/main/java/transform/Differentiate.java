@@ -50,7 +50,7 @@ public class Differentiate implements Visitor<Node> {
 
 	@Override
 	public Node visit(VariableNode node) {
-		if (node.value().equals(this.variable))
+		if (node.name().equals(this.variable))
 			return new NumberNode(Rational.fromInt(1));
 		return new NumberNode(Rational.fromInt(0));
 	}

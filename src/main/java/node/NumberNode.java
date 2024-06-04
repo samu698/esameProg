@@ -4,7 +4,19 @@ import math.Rational;
 
 import java.util.Objects;
 
+/**
+ * <p>The {@link Node} representing a {@link Rational} number.</p>
+ * <p>AF: This represents a rational number in a mathematical expression tree.</p>
+ * <p>REQUIREMENTS: value must be non-null.</p>
+ * <p>MUTABILITY: This class is immutable, as per {@link Node} requirement.</p>
+ * @param value The rational value of the number.
+ */
 public record NumberNode(Rational value) implements Node {
+	/**
+	 * Constructor for {@link NumberNode}.
+	 * <p>REQUIREMENTS: value must be non-null</p>
+	 * @param value The rational value of the number.
+	 */
 	public NumberNode {
 		Objects.requireNonNull(value);
 	}

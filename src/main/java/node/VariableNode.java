@@ -2,10 +2,37 @@ package node;
 
 import java.util.Objects;
 
-public record VariableNode(String value) implements Node {
+/**
+ * <p>The {@link Node} representing a variable in a expression.</p>
+ * <p>
+ *     AF: This represents a variable in an algebraic expression tree.
+ *     The variable is referred to by a name containing only upper or lowercase letters.
+ * </p>
+ * <p>
+ *     REQUIREMENTS:
+ *     <ul>
+ *         <li>name must be non-null.</li>
+ *         <li>name must be not empty.</li>
+ *         <li>name must contain only lower or uppercase letters.</li>
+ *     </ul>
+ * <p>MUTABILITY: This class is immutable, as per {@link Node} requirement.</p>
+ * @param name The name of the variable.
+ */
+public record VariableNode(String name) implements Node {
+	/**
+	 * Constructor for {@link VariableNode}.
+	 * <p>
+	 *     REQUIREMENTS:
+	 *     <ul>
+	 *         <li>name must be non-null.</li>
+	 *         <li>name must be not empty.</li>
+	 *         <li>name must contain only lower or uppercase letters.</li>
+	 *     </ul>
+	 * @param name The name of the variable.
+	 */
 	public VariableNode {
-		assert value.matches("^[a-zA-Z]+$");
-		Objects.requireNonNull(value);
+		assert name.matches("^[a-zA-Z]+$");
+		Objects.requireNonNull(name);
 	}
 
 	@Override
@@ -18,7 +45,7 @@ public record VariableNode(String value) implements Node {
 		if (o instanceof NumberNode) return 1;
 
 		if (o instanceof VariableNode other) {
-			return this.value.compareTo(other.value);
+			return this.name.compareTo(other.name);
 		}
 
 		return -1;
@@ -26,6 +53,6 @@ public record VariableNode(String value) implements Node {
 
 	@Override
 	public String toString() {
-		return value;
+		return name;
 	}
 }

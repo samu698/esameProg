@@ -189,7 +189,9 @@ public class Rational implements Comparable<Rational> {
 	}
 
 	/**
-	 * <p>EFFECTS: Compute the result of the pow of two rationals in the form of a {@link PowResult}</p>
+	 * <p>
+	 *     EFFECTS: Computes the result of the pow between this and exp, if the result is rational.
+	 *     If the result is rational the {@link Optional} will contain the result, else the {@link Optional} will be empty.
 	 * <p>
 	 *     REQUIREMENTS:
 	 *     <ul>
@@ -197,7 +199,7 @@ public class Rational implements Comparable<Rational> {
 	 *         <li>this and exp cannot both be equal to 0</li>
 	 *     </ul>
 	 * @param exp The exponent of the power.
-	 * @return The result in thje form of a {@link PowResult}
+	 * @return The result of the exponentiation, if rational.
 	 * @throws NullPointerException If exp is null.
 	 */
 	public Optional<Rational> pow(Rational exp)

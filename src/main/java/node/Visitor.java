@@ -2,7 +2,12 @@ package node;
 
 /**
  * <p>A visitor interface, for the {@link Node} class</p>
- * <p>REQUIREMENTS: a visitor must reset after being applied, so that applying it twice one the same node gives the same output.</p>
+ * <p>
+ *     REQUIREMENTS: 
+ *     <ul>
+ *         <li>A visitor must reset after being applied, so that applying it twice one the same node gives the same output.</li>
+ *         <li>A the method inside this interface should only be called by {@link Node#transform(Visitor)}</li>
+ *     </ul>
  * <p>
  *     NOTES:
  *     <ul>

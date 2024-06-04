@@ -1,7 +1,7 @@
 package clients.costruzione;
 
 import parse.ParsingExcpetion;
-import parse.StraighLine;
+import parse.StraightLine;
 import print.BasicPrinter;
 
 import java.util.Scanner;
@@ -23,7 +23,7 @@ public class ProgrammaLineare {
    */
   public static void main(String[] args) throws ParsingExcpetion {
 	  Scanner s = new Scanner(System.in);
-	  StraighLine parser = new StraighLine();
+	  StraightLine parser = new StraightLine();
 	  while (s.hasNextLine()) {
 		  String line = s.nextLine();
 		  if (line.isBlank()) break;
