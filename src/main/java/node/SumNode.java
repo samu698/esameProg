@@ -1,11 +1,9 @@
 package node;
 
-import math.Rational;
-
 import java.util.*;
 
 /**
- * <p>The {@link Node} representing a addition operation.
+ * <p>The {@link Node} representing an addition operation.
  * <p>
  *     AF: This represents the addition between all the operands.
  *     The order of the operands does not matter because addition is commutative.
@@ -36,7 +34,7 @@ public record SumNode(List<Node> operands) implements Node {
 	 */
 	public SumNode(List<Node> operands) {
 		Objects.requireNonNull(operands);
-		assert operands.size() >= 2; // TODO: should this be an exception
+		assert operands.size() >= 2;
 		List<Node> sortedOperands = new ArrayList<>(operands);
 		Collections.sort(sortedOperands);
 		this.operands = Collections.unmodifiableList(sortedOperands);
@@ -76,17 +74,16 @@ public record SumNode(List<Node> operands) implements Node {
 	 * @throws NullPointerException If any of the operands is null.
 	 */
 	public static SumNode fromSub(List<Node> operands) {
-		assert operands.size() >= 2; // TODO: should this be an exception
+		assert operands.size() >= 2;
 		List<Node> sumOperands = new ArrayList<>(operands.size());
 
 		Iterator<Node> iter = operands.iterator();
 		// The first operand of a subtraction remains the same
 		sumOperands.add(iter.next());
 
-		final Node negOne = new NumberNode(Rational.fromInt(-1));
 		while (iter.hasNext()) {
 			// Multiply the subtraction terms by -1 to negate them
-			sumOperands.add(new MulNode(negOne, iter.next()));
+			sumOperands.add(new MulNode(NumberNode.NEG_ONE, iter.next()));
 		}
 
 		return new SumNode(sumOperands);
@@ -98,14 +95,34 @@ public record SumNode(List<Node> operands) implements Node {
 	}
 
 	@Override
+	public boolean containsVariables() {
+		for (Node op : this.operands) {
+			if (op.containsVariables())
+				return true;
+		}
+		return false;
+	}
+
+	@Override
+	public int orderPosition() {
+		return 4;
+	}
+
+	@Override
 	public int compareTo(Node o) {
+		int order = Integer.compare(this.orderPosition(), o.orderPosition());
+		if (order != 0) return order;
+
 		if (o instanceof SumNode other) {
 			return Arrays.compare(
 				this.operands.toArray(Node[]::new),
 				other.operands.toArray(Node[]::new)
 			);
 		} else {
-			return 1;
+			// This should never happen, as per orderPosition requirement.
+			// If two Nodes have the same orderPosition they must be the same type.
+			assert false;
+			return 0;
 		}
 	}
 

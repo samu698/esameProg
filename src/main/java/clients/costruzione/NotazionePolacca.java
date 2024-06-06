@@ -1,7 +1,7 @@
 package clients.costruzione;
 
 import node.Node;
-import parse.ParsingExcpetion;
+import parse.ParsingException;
 import parse.Polish;
 import print.BasicPrinter;
 
@@ -23,7 +23,7 @@ public class NotazionePolacca {
 	* @param args non utilizzati.
 	*/
 
-	public static void main(String[] args) throws ParsingExcpetion {
+	public static void main(String[] args) throws ParsingException {
 		Scanner s = new Scanner(System.in);
 		BasicPrinter basicPrinter = new BasicPrinter();
 		while (s.hasNextLine()) {

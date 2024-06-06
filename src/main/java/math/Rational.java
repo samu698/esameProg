@@ -1,9 +1,7 @@
 package math;
 
-import java.lang.management.OperatingSystemMXBean;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Random;
 
 /**
  * <p>A rational number.</p>
@@ -24,6 +22,13 @@ import java.util.Random;
  * <p>NOTES: Handling overflows would add to much complexity to this class, so the caller must verify that it doesn't happen.</p>
  */
 public class Rational implements Comparable<Rational> {
+	/** The constant zero */
+	public static final Rational ZERO = Rational.fromInt(0);
+	/** The constant one */
+	public static final Rational ONE = Rational.fromInt(1);
+	/** The constant negative one */
+	public static final Rational NEG_ONE = Rational.fromInt(-1);
+
 	/** Numerator of the rational */
 	public final long num;
 	/** Denominator of the rational */
@@ -55,8 +60,6 @@ public class Rational implements Comparable<Rational> {
 	 *     REQUIREMENTS:
 	 *     <ul>
 	 *         <li>den must not be zero.</li>
-	 *         <li>Unchecked: den must not be {@link Long#MIN_VALUE}. (will cause overflow when negated)</li>
-	 *         <li>Unchecked: num must not be {@link Long#MIN_VALUE} if den &lt; 0. (will cause overflow when negated)</li>
 	 *     </ul>
 	 * @param num The numerator of the rational
 	 * @param den The denominator of the rational
@@ -66,9 +69,6 @@ public class Rational implements Comparable<Rational> {
 	public static Rational fromNumDen(long num, long den)
 		throws IllegalArgumentException
 	{
-		assert den != Long.MIN_VALUE: "This value will overflow when negated";
-		assert num != Long.MIN_VALUE || den > 0: "This value will overflow when negated";
-
 		if (den == 0)
 			throw new IllegalArgumentException("rational number denominator cannot be zero");
 
@@ -104,16 +104,6 @@ public class Rational implements Comparable<Rational> {
 	 */
 	public boolean isInteger() {
 		return this.den == 1;
-	}
-
-	/**
-	 * <p>EFFECTS: Check if the rational is equal to an integer.</p>
-	 * <p>REQUIREMENTS: None.</p>
-	 * @param value The integer to compare against.
-	 * @return true if the rational number is equal to the provided integer.
-	 */
-	public boolean equalInt(long value) {
-		return this.den == 1 && this.num == value;
 	}
 
 	/**
@@ -200,23 +190,26 @@ public class Rational implements Comparable<Rational> {
 	 *     </ul>
 	 * @param exp The exponent of the power.
 	 * @return The result of the exponentiation, if rational.
+	 * @throws IllegalArgumentException If trying to evaluate 0^0.
 	 * @throws NullPointerException If exp is null.
 	 */
 	public Optional<Rational> pow(Rational exp)
-		throws NullPointerException
+		throws IllegalArgumentException, NullPointerException
 	{
 		Objects.requireNonNull(exp);
 
-		// b^0 = 1 TODO: check 0^0
-		if (exp.equalInt(0))
+		// b^0 = 1
+		if (exp.equals(Rational.ZERO)) {
+			if (this.equals(Rational.ZERO)) throw new IllegalArgumentException("Cannot evaluate 0^0");
 			return Optional.of(new Rational(1, 1));
+		}
 
 		// b^1 = b
-		if (exp.equalInt(1))
+		if (exp.equals(Rational.ONE))
 			return Optional.of(this);
 
 		// Ignore complex results
-		if (exp.den % 2 == 0 && this.num < 0)
+		if (exp.den % 2 == 0 && this.compareTo(Rational.ZERO) < 0)
 			return Optional.empty();
 
 		// Remove the negative sign from the exponent if the exponent is negative
@@ -233,7 +226,7 @@ public class Rational implements Comparable<Rational> {
 		Optional<Long> numRoot = Utils.perfectRoot(base.num, exp.den);
 		Optional<Long> denRoot = Utils.perfectRoot(base.den, exp.den);
 
-		long exponent = exp.num >= 0 ? exp.num : -exp.num;
+		long exponent = Math.abs(exp.num);
 		if (numRoot.isPresent() && denRoot.isPresent()) {
 			Rational value = fromNumDen(
 				Utils.pow(numRoot.get(), exponent),

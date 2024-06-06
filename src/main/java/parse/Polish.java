@@ -12,7 +12,7 @@ import java.util.Stack;
 public class Polish {
 	/**
 	 * The name of the format.
-	 * This is used when constructing a {@link ParsingExcpetion}.
+	 * This is used when constructing a {@link ParsingException}.
 	 */
 	public final static String FORMAT_NAME = "Polish notation";
 
@@ -22,16 +22,16 @@ public class Polish {
 	}
 
 	/**
-	 * TODO: add links
 	 * <p>EFFECTS: Parses a polish notation expression to a {@link Node}.</p>
 	 * <p>REQUIREMENTS: Input must be non-null.</p>
 	 * @param input The input string to parse.
 	 * @return A {@link Node} containing the parsed expression.
-	 * @throws ParsingExcpetion If the passed expression is invalid.
+	 * @throws ParsingException If the passed expression is invalid.
 	 * @throws NullPointerException If input is null.
+	 * @see <a href="https://en.wikipedia.org/wiki/Polish_notation">Polish notation on Wikipedia</a>
 	 */
 	public static Node parse(String input)
-		throws ParsingExcpetion, NullPointerException
+		throws ParsingException, NullPointerException
 	{
 		Objects.requireNonNull(input);
 
@@ -51,9 +51,8 @@ public class Polish {
 				case "*" -> new MulNode(getOperands(operands));
 				case "/" -> MulNode.fromDiv(getOperands(operands));
 				case "^" -> {
-					if (operands.size() < 2)
-						throw new ParsingExcpetion("Not enough operands", FORMAT_NAME);
-					yield new PowNode(operands.pop(), operands.pop());
+					List<Node> ops = getOperands(operands);
+					yield new PowNode(ops.get(0), ops.get(1));
 				}
 				default -> null;
 			};
@@ -75,14 +74,14 @@ public class Polish {
 				Rational rat = Rational.fromInt(value);
 				operands.push(new NumberNode(rat));
 			} catch (NumberFormatException e) {
-				throw new ParsingExcpetion("Invalid number", FORMAT_NAME);
+				throw new ParsingException("Invalid number", FORMAT_NAME);
 			}
 		}
 
 		if (operands.isEmpty())
-			throw new ParsingExcpetion("Cannot parse empty string", FORMAT_NAME);
+			throw new ParsingException("Cannot parse empty string", FORMAT_NAME);
 		if (operands.size() > 1)
-			throw new ParsingExcpetion("Too many operands", FORMAT_NAME);
+			throw new ParsingException("Too many operands", FORMAT_NAME);
 		return operands.pop();
 	}
 
@@ -96,14 +95,13 @@ public class Polish {
 	 * <p>MUTABILITY: This method mutates the operands parameter.</p>
 	 * @param operands The operands to read.
 	 * @return A list of the last two operands.
-	 * @throws ParsingExcpetion If operands contains less than two operands.
+	 * @throws ParsingException If operands contains less than two operands.
 	 */
 	private static List<Node> getOperands(Stack<Node> operands)
-		throws ParsingExcpetion
+		throws ParsingException
 	{
 		if (operands.size() < 2)
-			throw new ParsingExcpetion("Not enough operands", FORMAT_NAME);
+			throw new ParsingException("Not enough operands", FORMAT_NAME);
 		return List.of(operands.pop(), operands.pop());
 	}
-
 }

@@ -45,14 +45,14 @@ public class Differentiate implements Visitor<Node> {
 
 	@Override
 	public Node visit(NumberNode node) {
-		return new NumberNode(Rational.fromInt(0));
+		return NumberNode.ZERO;
 	}
 
 	@Override
 	public Node visit(VariableNode node) {
 		if (node.name().equals(this.variable))
-			return new NumberNode(Rational.fromInt(1));
-		return new NumberNode(Rational.fromInt(0));
+			return NumberNode.ONE;
+		return NumberNode.ZERO;
 	}
 
 	@Override
@@ -61,13 +61,12 @@ public class Differentiate implements Visitor<Node> {
 		for (Node expr : node.operands()) {
 			Node derivative = expr.transform(this);
 			// Don't add zero terms
-			if (derivative instanceof NumberNode num && num.value().equalInt(0))
-				continue;
-			derivatives.add(derivative);
+			if (!(derivative instanceof NumberNode num) || !num.value().equals(Rational.ZERO))
+				derivatives.add(derivative);
 		}
 
 		if (derivatives.isEmpty())
-			return new NumberNode(Rational.fromInt(0));
+			return NumberNode.ZERO;
 
 		if (derivatives.size() == 1)
 			return derivatives.get(0);
@@ -85,7 +84,8 @@ public class Differentiate implements Visitor<Node> {
 		for (Node expr : node.operands()) {
 			Node derivative = expr.transform(this);
 
-			if (derivative instanceof NumberNode numDerivative && numDerivative.value().equalInt(0)) {
+			if (derivative instanceof NumberNode numDerivative && numDerivative.value().equals(Rational.ZERO)) {
+				// If the derivative is zero the factor is constant.
 				constantTerms.add(expr);
 			} else {
 				variableTerms.add(expr);
@@ -95,7 +95,7 @@ public class Differentiate implements Visitor<Node> {
 
 		// If all the factors are constant, the product is constant
 		if (variableTerms.isEmpty())
-			return new NumberNode(Rational.fromInt(0));
+			return NumberNode.ZERO;
 
 		// If only one factor is variable linearity can be applied
 		if (variableTerms.size() == 1) {
@@ -107,11 +107,13 @@ public class Differentiate implements Visitor<Node> {
 		// Apply product rule
 		List<Node> sumOperands = new ArrayList<>();
 		for (int i = 0; i < derivatives.size(); i++) {
-			List<Node> mulOperands = new ArrayList<>(constantTerms);
-			for (int j = 0; j < variableTerms.size(); j++) {
-				if (i != j) mulOperands.add(variableTerms.get(j));
-			}
+			// Multiply all the variable term.
+			List<Node> mulOperands = new ArrayList<>(variableTerms);
+			// Except the i-th that will be substituted with its derivative.
+			mulOperands.remove(i);
 			mulOperands.add(derivatives.get(i));
+			// Add all the constant terms as factors.
+			mulOperands.addAll(constantTerms);
 
 			sumOperands.add(new MulNode(mulOperands));
 		}
@@ -124,25 +126,25 @@ public class Differentiate implements Visitor<Node> {
 		// [f(x)^n]' = nf(x)^(n - 1) + f'(x)
 
 		// b^0 is a constant
-		if (node.exp().equalInt(0))
-			return new NumberNode(Rational.fromInt(0));
+		if (node.exp().equals(Rational.ZERO))
+			return NumberNode.ZERO;
 
 		//  f(x)^1 = f(x), so (f(x)^1)' = f'(x)
-		if (node.exp().equalInt(1))
+		if (node.exp().equals(Rational.ONE))
 			return node.base().transform(this);
 
 		Node chain = node.base().transform(this);
 
-		if (chain instanceof NumberNode numChain && numChain.value().equalInt(0)) {
+		if (chain instanceof NumberNode numChain && numChain.value().equals(Rational.ZERO)) {
 			// The derivative of the base is constant, so the entire exponentiation is constant
-			return new NumberNode(Rational.fromInt(0));
+			return NumberNode.ZERO;
 		}
 
-		Rational derivativeExp = node.exp().add(Rational.fromInt(-1));
+		Rational derivativeExp = node.exp().add(Rational.NEG_ONE);
 		Node coefficient = new NumberNode(node.exp());
 		Node pow = new PowNode(node.base(), derivativeExp);
 
-		if (chain instanceof NumberNode numChain && numChain.value().equalInt(1))
+		if (chain instanceof NumberNode numChain && numChain.value().equals(Rational.ONE))
 			// If the chain is one it can be elided
 			return new MulNode(coefficient, pow);
 		else

@@ -7,8 +7,8 @@ import java.util.*;
 
 /**
  * <p>
- *     A transformer that simplifies a {@link Node},
- *     TODO: explain all simplifications
+ *     A transformer that simplifies a {@link Node}.
+ *     This code in this class implements all the simplification described in the project description.
  * <p>REQUIREMENTS: see {@link Visitor} for the requirements.</p>
  * <p>MUTABILITY: This class has no state and it cannot mutate, respecting the mutability requirements of {@link Visitor}.</p>
  */
@@ -38,18 +38,19 @@ public class Simplify implements Visitor<Node> {
 		}
 
 		HashMap<Node, Rational> terms = new HashMap<>();
-		Rational rationalSum = Rational.fromInt(0);
+		Rational rationalSum = Rational.ZERO;
 		for (Node s : simplified) {
-			// Sum rational terms
+			// Collect rational terms into a single rational.
 			if (s instanceof NumberNode num) {
 				rationalSum = rationalSum.add(num.value());
 				continue;
 			}
 
 			Node term = s;
-			Rational termFactor = Rational.fromInt(1);
+			Rational termFactor = Rational.ONE;
 
 			// If the node is a term multiplied by a factor we can consider the term and factor separately
+			// XXX: this is not the cleanest
 			if (s instanceof MulNode mul && mul.operands().get(0) instanceof NumberNode factor) {
 				List<Node> mulOperands = mul.operands();
 				termFactor = factor.value();
@@ -62,19 +63,20 @@ public class Simplify implements Visitor<Node> {
 			}
 
 			// Add the factor to the map of terms
-			Rational oldFactor = terms.getOrDefault(term, Rational.fromInt(0));
+			Rational oldFactor = terms.getOrDefault(term, Rational.ZERO);
 			terms.put(term, oldFactor.add(termFactor));
 		}
 
 		// Using the grouped terms generate the new sum tree
 		simplified.clear();
 		// If the rational constant is zero it can be elided
-		if (!rationalSum.equalInt(0)) simplified.add(new NumberNode(rationalSum));
+		if (!rationalSum.equals(Rational.ZERO))
+			simplified.add(new NumberNode(rationalSum));
 		for (Map.Entry<Node, Rational> term : terms.entrySet()) {
 			// Ignore terms with factor of zero
-			if (term.getValue().equalInt(0)) continue;
+			if (term.getValue().equals(Rational.ZERO)) continue;
 			// Copy terms with factor of one
-			if (term.getValue().equalInt(1)) {
+			if (term.getValue().equals(Rational.ONE)) {
 				simplified.add(term.getKey());
 				continue;
 			}
@@ -90,7 +92,7 @@ public class Simplify implements Visitor<Node> {
 			}
 		}
 
-		if (simplified.isEmpty()) return new NumberNode(Rational.fromInt(0));
+		if (simplified.isEmpty()) return NumberNode.ZERO;
 		if (simplified.size() == 1) return simplified.get(0);
 		return new SumNode(simplified);
 	}
@@ -110,7 +112,7 @@ public class Simplify implements Visitor<Node> {
 		}
 
 		HashMap<Node, Rational> terms = new HashMap<>();
-		Rational rationalProd = Rational.fromInt(1);
+		Rational rationalProd = Rational.ONE;
 		for (Node s : simplified) {
 			// Multiply rational terms
 			if (s instanceof NumberNode num) {
@@ -119,7 +121,7 @@ public class Simplify implements Visitor<Node> {
 			}
 
 			Node term = s;
-			Rational termExp = Rational.fromInt(1);
+			Rational termExp = Rational.ONE;
 
 			if (s instanceof PowNode pow) {
 				termExp = pow.exp();
@@ -127,22 +129,28 @@ public class Simplify implements Visitor<Node> {
 			}
 
 			// Add the factor to the map of terms
-			Rational oldPow = terms.getOrDefault(term, Rational.fromInt(0));
+			Rational oldPow = terms.getOrDefault(term, Rational.ZERO);
 			terms.put(term, oldPow.add(termExp));
 		}
 
 		simplified.clear();
 
 		// If the rational constant is zero the multiplication is equal to zero
-		if (rationalProd.equalInt(0)) return new NumberNode(Rational.fromInt(0));
+		if (rationalProd.equals(Rational.ZERO)) return NumberNode.ZERO;
 		// If the rational constant is one it can be elided
-		if (!rationalProd.equalInt(1)) simplified.add(new NumberNode(rationalProd));
+		if (!rationalProd.equals(Rational.ONE)) simplified.add(new NumberNode(rationalProd));
 		// Using the grouped terms generate the new mul tree
 		for (Map.Entry<Node, Rational> term : terms.entrySet()) {
-			// Ignore terms with exponent of zero TODO: check if base is zero
-			if (term.getValue().equalInt(0)) continue;
+			// Ignore terms with exponent of zero
+			if (term.getValue().equals(Rational.ZERO)) {
+				if (term.getKey().equals(NumberNode.ZERO))
+					throw new IllegalArgumentException("Cannot evaluate 0^0");
+				if (term.getKey().containsVariables())
+					throw new IllegalArgumentException("A variable to the zero is indeterminate");
+				continue;
+			}
 			// Copy terms with factor of one
-			if (term.getValue().equalInt(1)) {
+			if (term.getValue().equals(Rational.ONE)) {
 				simplified.add(term.getKey());
 				continue;
 			}
@@ -152,39 +160,32 @@ public class Simplify implements Visitor<Node> {
 		}
 
 		// All the terms have been simplified return one
-		if (simplified.isEmpty()) return new NumberNode(Rational.fromInt(1));
+		if (simplified.isEmpty()) return NumberNode.ONE;
 		// If there is only one term return it
 		if (simplified.size() == 1) return simplified.get(0);
 		// Else, construct a multiplication of all the simplified terms
 		return new MulNode(simplified);
 	}
 
-	// 2. b^0 = 1 (if b != 0)
-	// 3. b^1 = b
-	// 4. 0^e = 0 (if e != 0)
-	// 5. Power of fraction: remove irrational (5/9)^(1/2) = 3^-1 * 5^(1/2)
 	@Override
-	public Node visit(PowNode node) {
+	public Node visit(PowNode node)
+		throws IllegalArgumentException
+	{
 		Node base = node.base().transform(this);
 		Rational exp = node.exp();
 
-		// b^0 = 1 TODO: check b != 0
-		if (exp.equalInt(0))
-			return new NumberNode(Rational.fromInt(1));
+		// b^0 = 1
+		if (exp.equals(Rational.ZERO)) {
+			if (base.equals(NumberNode.ZERO))
+				throw new IllegalArgumentException("Cannot evaluate 0^0");
+			if (base.containsVariables())
+				throw new IllegalArgumentException("A variable to the zero is indeterminate");
+			return NumberNode.ONE;
+		}
 
 		// b^1 = b
-		if (exp.equalInt(1))
+		if (exp.equals(Rational.ONE))
 			return base;
-
-		if (base instanceof NumberNode numBase) {
-			// 0^e = 0 TODO: check e != 0
-			if (numBase.value().equalInt(0))
-				return new NumberNode(Rational.fromInt(0));
-
-			// 1^e = 1
-			if (numBase.value().equalInt(1))
-				return new NumberNode(Rational.fromInt(1));
-		}
 
 		if (base instanceof NumberNode numBase) {
 			// Return the result of the power, if the result of the operation is rational
@@ -193,7 +194,7 @@ public class Simplify implements Visitor<Node> {
 				return new NumberNode(rationalPow.get());
 
 			// If operation cannot be performed return the node by simplifying only the base
-			if (exp.num < 0) {
+			if (exp.compareTo(Rational.ZERO) < 0) {
 				// Calculate the reciprocal of the base if the exponent is negative
 				Node reciprocalBase = new NumberNode(numBase.value().reciprocal());
 				return new PowNode(reciprocalBase, exp.opposite());
@@ -203,7 +204,7 @@ public class Simplify implements Visitor<Node> {
 		} else if (base instanceof PowNode powBase) {
 			// Flatten nested powers
 			Rational resultExp = exp.mul(powBase.exp());
-			if (exp.num < 0 && powBase.base() instanceof NumberNode numBase) {
+			if (exp.compareTo(Rational.ZERO) < 0 && powBase.base() instanceof NumberNode numBase) {
 				Node reciprocalBase = new NumberNode(numBase.value().reciprocal());
 				return new PowNode(reciprocalBase, resultExp.opposite());
 			}

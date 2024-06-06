@@ -37,6 +37,7 @@ public class Expand implements Visitor<Node> {
 	public Node visit(MulNode node) {
 		Iterator<Node> iter = node.operands().iterator();
 
+		// Expand the multiplication terms in pairs
 		Node result = expandBinaryProduct(iter.next(), iter.next());
 		while (iter.hasNext())
 			result = expandBinaryProduct(result, iter.next());
@@ -63,14 +64,14 @@ public class Expand implements Visitor<Node> {
 		assert lhs != null;
 		assert rhs != null;
 
-		// Expand recursively
+		// Expand recursively the left hand side
 		lhs = lhs.transform(this);
 		List<Node> lhsTerms;
 		// If the node is a sum distributivity can be applied
 		if (lhs instanceof SumNode lhsSum) lhsTerms = lhsSum.operands();
 		else lhsTerms = List.of(lhs);
 
-		// Expand recursively
+		// Expand recursively the right hand side
 		rhs = rhs.transform(this);
 		List<Node> rhsTerms;
 		// If the node is a sum distributivity can be applied
@@ -89,23 +90,33 @@ public class Expand implements Visitor<Node> {
 	}
 
 	@Override
-	public Node visit(PowNode node) {
+	public Node visit(PowNode node)
+		throws IllegalArgumentException
+	{
 		// b^0 = 1
-		if (node.exp().equalInt(0))
-			// TODO: check base != 0
-			return new NumberNode(Rational.fromInt(1));
+		if (node.exp().equals(Rational.ZERO)) {
+			if (node.base().equals(NumberNode.ZERO))
+				throw new IllegalArgumentException("Cannot evaluate 0^0");
+			// XXX: this is not perfect for example the expression (x/x)^0 is not indeterminate
+			// XXX: waiting for the issue to be resolved
+			/*
+			if (node.base().containsVariables())
+				throw new IllegalArgumentException("A variable to the zero is indeterminate");
+			*/
+			return NumberNode.ONE;
+		}
 
+		// Expand the base recursively
 		Node base = node.base().transform(this);
 
 		// b^1 = b
-		if (node.exp().equalInt(1))
+		if (node.exp().equals(Rational.ONE))
 			return base;
 
-		int repetitions = (int)node.exp().num;
-		if (repetitions < 0) repetitions = -repetitions;
-
+		int repetitions = (int)Math.abs(node.exp().num);
 		final List<Node> expandedTerms = new ArrayList<>();
 		if (base instanceof SumNode sumBase) {
+			// Compute the all the permutations with repetitions
 			List<Node> terms = sumBase.operands();
 
 			int[] indices = new int[repetitions];
@@ -136,12 +147,12 @@ public class Expand implements Visitor<Node> {
 		if (expandedTerms.size() > 1) expandedBase = new SumNode(expandedTerms);
 		else expandedBase = expandedTerms.get(0);
 
-		if (node.exp().isInteger() && node.exp().num >= 0) {
-			// Remove the exponent because the base has been expanded
+		// Return the expanded base without if the exponent was a positive integer
+		if (node.exp().isInteger() && node.exp().compareTo(Rational.ZERO) >= 0) {
 			return expandedBase;
 		}
 
-		// The new exponent is 1/d keeping the sign of the exponent
+		// Return the expanded base to the power of 1/d
 		Rational newExp = Rational.fromNumDen(Long.signum(node.exp().num), node.exp().den);
 		return new PowNode(expandedBase, newExp);
 	}

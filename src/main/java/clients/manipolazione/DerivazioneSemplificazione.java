@@ -1,7 +1,7 @@
 package clients.manipolazione;
 
 import node.Node;
-import parse.ParsingExcpetion;
+import parse.ParsingException;
 import parse.Polish;
 import print.BasicPrinter;
 import transform.Differentiate;
@@ -23,7 +23,7 @@ public class DerivazioneSemplificazione {
    *
    * @param args non utilizzati.
    */
-  public static void main(String[] args) throws ParsingExcpetion {
+  public static void main(String[] args) throws ParsingException {
 	  String variable = args[0];
 
 	  BasicPrinter printer = new BasicPrinter();

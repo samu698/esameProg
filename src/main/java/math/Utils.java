@@ -21,8 +21,8 @@ public class Utils {
 	public static long gcd(long a, long b) {
 		// Get the absolute value for both operands
 		// gcd(a, b) = gcd(+-a, +-b)
-		a = a >= 0 ? a : -a;
-		b = b >= 0 ? b : -b;
+		a = Math.abs(a);
+		b = Math.abs(b);
 
 		// gcd(0, n) = gcd(n, 0) = n
 		if (a == 0) return b;
@@ -75,8 +75,7 @@ public class Utils {
 	public static long lcm(long a, long b) {
 		// Remove common factors from the product of a and b
 		long lcm = a * b / gcd(a, b);
-		// Assure positive sign
-		return lcm >= 0 ? lcm : -lcm;
+		return Math.abs(lcm);
 	}
 
 	/**

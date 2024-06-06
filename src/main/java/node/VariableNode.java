@@ -41,14 +41,28 @@ public record VariableNode(String name) implements Node {
 	}
 
 	@Override
+	public boolean containsVariables() {
+		return true;
+	}
+
+	@Override
+	public int orderPosition() {
+		return 1;
+	}
+
+	@Override
 	public int compareTo(Node o) {
-		if (o instanceof NumberNode) return 1;
+		int order = Integer.compare(this.orderPosition(), o.orderPosition());
+		if (order != 0) return order;
 
 		if (o instanceof VariableNode other) {
 			return this.name.compareTo(other.name);
+		} else {
+			// This should never happen, as per orderPosition requirement.
+			// If two Nodes have the same orderPosition they must be the same type.
+			assert false;
+			return 0;
 		}
-
-		return -1;
 	}
 
 	@Override

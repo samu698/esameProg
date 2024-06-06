@@ -94,10 +94,9 @@ public record MulNode(List<Node> operands) implements Node {
 		// The first operand of a division remains the same
 		mulOperands.add(iter.next());
 
-		final Node negOne = new NumberNode(Rational.fromInt(-1));
 		while (iter.hasNext()) {
 			// Multiply the subtraction terms by -1 to negate them
-			mulOperands.add(new PowNode(iter.next(), negOne));
+			mulOperands.add(new PowNode(iter.next(), Rational.NEG_ONE));
 		}
 
 		return new MulNode(mulOperands);
@@ -109,19 +108,35 @@ public record MulNode(List<Node> operands) implements Node {
 	}
 
 	@Override
+	public boolean containsVariables() {
+		for (Node op : this.operands) {
+			if (op.containsVariables())
+				return true;
+		}
+		return false;
+	}
+
+	@Override
+	public int orderPosition() {
+		return 3;
+	}
+
+	@Override
 	public int compareTo(Node o) {
-		if (o instanceof NumberNode) return 1;
-		if (o instanceof VariableNode) return 1;
-		if (o instanceof PowNode) return 1;
+		int order = Integer.compare(this.orderPosition(), o.orderPosition());
+		if (order != 0) return order;
 
 		if (o instanceof MulNode other) {
 			return Arrays.compare(
 				this.operands.toArray(Node[]::new),
 				other.operands.toArray(Node[]::new)
 			);
+		} else {
+			// This should never happen, as per orderPosition requirement.
+			// If two Nodes have the same orderPosition they must be the same type.
+			assert false;
+			return 0;
 		}
-
-		return -1;
 	}
 
 	@Override

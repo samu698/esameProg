@@ -78,24 +78,36 @@ public record PowNode(Node base, Rational exp) implements Node {
 		}
 	}
 
-
 	@Override
 	public <T> T transform(Visitor<T> visitor) {
 		return visitor.visit(this);
 	}
 
 	@Override
+	public boolean containsVariables() {
+		return this.base.containsVariables();
+	}
+
+	@Override
+	public int orderPosition() {
+		return 2;
+	}
+
+	@Override
 	public int compareTo(Node o) {
-		if (o instanceof NumberNode) return 1;
-		if (o instanceof VariableNode) return 1;
+		int order = Integer.compare(this.orderPosition(), o.orderPosition());
+		if (order != 0) return order;
 
 		if (o instanceof PowNode other) {
-			int cmp = this.base.compareTo(other.base);
-			if (cmp != 0) return cmp;
+			order = this.base.compareTo(other.base);
+			if (order != 0) return order;
 			return this.exp.compareTo(other.exp);
+		} else {
+			// This should never happen, as per orderPosition requirement.
+			// If two Nodes have the same orderPosition they must be the same type.
+			assert false;
+			return 0;
 		}
-
-		return -1;
 	}
 
 	@Override

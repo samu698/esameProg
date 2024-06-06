@@ -1,6 +1,6 @@
 package clients.costruzione;
 
-import parse.ParsingExcpetion;
+import parse.ParsingException;
 import parse.StraightLine;
 import print.BasicPrinter;
 
@@ -21,7 +21,7 @@ public class ProgrammaLineare {
    *
    * @param args non utilizzati.
    */
-  public static void main(String[] args) throws ParsingExcpetion {
+  public static void main(String[] args) throws ParsingException {
 	  Scanner s = new Scanner(System.in);
 	  StraightLine parser = new StraightLine();
 	  while (s.hasNextLine()) {

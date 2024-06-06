@@ -1,7 +1,7 @@
 package clients.manipolazione;
 
 import node.Node;
-import parse.ParsingExcpetion;
+import parse.ParsingException;
 import parse.Polish;
 import print.BasicPrinter;
 import transform.Expand;
@@ -25,7 +25,7 @@ public class EspansioneSemplificazione {
 	 *
 	 * @param args non utilizzati.
 	 */
-	public static void main(String[] args) throws ParsingExcpetion {
+	public static void main(String[] args) throws ParsingException {
 		Scanner s = new Scanner(System.in);
 		BasicPrinter printer = new BasicPrinter();
 		while (s.hasNextLine()) {

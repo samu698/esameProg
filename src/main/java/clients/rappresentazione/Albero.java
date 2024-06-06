@@ -1,7 +1,7 @@
 package clients.rappresentazione;
 
 import node.Node;
-import parse.ParsingExcpetion;
+import parse.ParsingException;
 import parse.Polish;
 import print.TreePrinter;
 
@@ -19,7 +19,7 @@ public class Albero {
    *
    * @param args non utilizzati.
    */
-  public static void main(String[] args) throws ParsingExcpetion {
+  public static void main(String[] args) throws ParsingException {
 	  Scanner s = new Scanner(System.in);
 	  TreePrinter treePrinter = new TreePrinter();
 	  while (s.hasNextLine()) {

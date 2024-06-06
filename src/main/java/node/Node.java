@@ -20,7 +20,7 @@ package node;
  *     Here a discussion about this on <a href="https://stackoverflow.com/questions/3587995/why-no-cycles-in-eric-lipperts-immutable-binary-tree">Stackoverflow</a>.
  * <p>
  *     NOTE: Nodes have a total order relation and all implementors must respect it while implementing {@link Comparable#compareTo}
- *     TODO: explain total order relation
+ *     The total order relation is described in the project description.
  */
 public interface Node extends Comparable<Node> {
 	/**
@@ -32,4 +32,27 @@ public interface Node extends Comparable<Node> {
 	 * @throws NullPointerException If visitor is null.
 	 */
 	<Ret> Ret transform(Visitor<Ret> visitor) throws NullPointerException;
+
+	/**
+	 * <p>EFFECTS: Checks if the node contains variables in its expression tree.</p>
+	 * @return true if the node contains a variable.
+	 */
+	boolean containsVariables();
+
+	/**
+	 * <p>
+	 *     EFFECTS: Returns the order precedence of a the node.
+	 *     Given two nodes of different type a, b such that a.orderPosition() >= b.orderPosition() then a >= b.
+	 * </p>
+	 * <p>
+	 *     REQUIREMENTS:
+	 *     <ul>
+	 *         <li>The return value must be constant.</li>
+	 *         <li>Given two nodes of different type a, b such that a.orderPosition() >= b.orderPosition() the a >= b.</li>
+	 *         <li>Different types must return different values.</li>
+	 *     </ul>
+	 * @return The order precedence.
+	 */
+	int orderPosition();
+
 }

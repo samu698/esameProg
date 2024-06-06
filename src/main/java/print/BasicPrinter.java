@@ -4,7 +4,6 @@ import node.*;
 import node.NumberNode;
 
 import java.util.List;
-import java.util.Objects;
 
 /**
  * <p>A printer that prints a {@link Node} in linearized format.</p>
