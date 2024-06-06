@@ -97,12 +97,6 @@ public class Expand implements Visitor<Node> {
 		if (node.exp().equals(Rational.ZERO)) {
 			if (node.base().equals(NumberNode.ZERO))
 				throw new IllegalArgumentException("Cannot evaluate 0^0");
-			// XXX: this is not perfect for example the expression (x/x)^0 is not indeterminate
-			// XXX: waiting for the issue to be resolved
-			/*
-			if (node.base().containsVariables())
-				throw new IllegalArgumentException("A variable to the zero is indeterminate");
-			*/
 			return NumberNode.ONE;
 		}
 

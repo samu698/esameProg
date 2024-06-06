@@ -6,7 +6,18 @@ import node.NumberNode;
 
 import java.util.*;
 
-/** TODO */
+/**
+ * Implementation a <a href="https://en.wikipedia.org/wiki/Straight-line_program">Straight line program</a> parser.
+ * <p>AF: This class stores a straight line program as a list of expressions where each expression corresponds to a line of the program.
+ * <p>
+ *     REQUIREMENTS:
+ *     <ul>
+ *         <li>previousExpressions must be non-null.</li>
+ *         <li>previousExpressions can only be modified by adding new expressions.</li>
+ *     </ul>
+ * <p>MUTABILITY: This class is mutable, by means of adding a expression to the previousExpressions list.</p>
+ * @see <a href="https://en.wikipedia.org/wiki/Straight-line_program">Straight line program</a>
+ */
 public class StraightLine {
 	/**
 	 * The name of the format.
@@ -25,7 +36,6 @@ public class StraightLine {
 	}
 
 	/**
-	 * TODO: add links
 	 * <p>
 	 *     EFFECTS: Parsers a straight line program notation expression.
 	 *     It will use the previous parsed expressions to parse the passed expression.
@@ -67,7 +77,6 @@ public class StraightLine {
 	}
 
 	/**
-	 * TODO: links
 	 * <p>
 	 *     EFFECTS: Parses a line of straight line program.
 	 *     Using the previous expression as input.
