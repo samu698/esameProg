@@ -1,7 +1,7 @@
-package transform;
+package luppolo.transform;
 
-import math.Rational;
-import node.*;
+import luppolo.math.Rational;
+import luppolo.node.*;
 
 import java.util.*;
 

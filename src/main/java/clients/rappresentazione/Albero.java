@@ -1,9 +1,9 @@
 package clients.rappresentazione;
 
-import node.Node;
-import parse.ParsingException;
-import parse.Polish;
-import print.TreePrinter;
+import luppolo.node.Node;
+import luppolo.parse.ParsingException;
+import luppolo.parse.Polish;
+import luppolo.print.TreePrinter;
 
 import java.util.Scanner;
 

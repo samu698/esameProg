@@ -1,6 +1,6 @@
-package node;
+package luppolo.node;
 
-import math.Rational;
+import luppolo.math.Rational;
 
 import java.util.*;
 

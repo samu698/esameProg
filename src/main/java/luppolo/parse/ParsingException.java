@@ -1,4 +1,4 @@
-package parse;
+package luppolo.parse;
 
 import java.io.Serial;
 

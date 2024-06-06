@@ -1,8 +1,7 @@
-package parse;
+package luppolo.parse;
 
-import math.Rational;
-import node.*;
-import node.NumberNode;
+import luppolo.math.Rational;
+import luppolo.node.*;
 
 import java.util.List;
 import java.util.Objects;

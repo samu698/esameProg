@@ -1,7 +1,7 @@
-package node;
+package luppolo.node;
 
-import math.Rational;
-import transform.Simplify;
+import luppolo.math.Rational;
+import luppolo.transform.Simplify;
 
 import java.util.Objects;
 

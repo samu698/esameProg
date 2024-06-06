@@ -1,4 +1,4 @@
-package node;
+package luppolo.node;
 
 import java.util.Objects;
 

@@ -1,7 +1,6 @@
-package print;
+package luppolo.print;
 
-import node.*;
-import node.NumberNode;
+import luppolo.node.*;
 
 import java.util.List;
 

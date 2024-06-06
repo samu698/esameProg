@@ -1,8 +1,8 @@
 package clients.costruzione;
 
-import parse.ParsingException;
-import parse.StraightLine;
-import print.BasicPrinter;
+import luppolo.parse.ParsingException;
+import luppolo.parse.StraightLine;
+import luppolo.print.BasicPrinter;
 
 import java.util.Scanner;
 

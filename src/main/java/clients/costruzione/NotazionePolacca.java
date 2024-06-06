@@ -1,9 +1,9 @@
 package clients.costruzione;
 
-import node.Node;
-import parse.ParsingException;
-import parse.Polish;
-import print.BasicPrinter;
+import luppolo.node.Node;
+import luppolo.parse.ParsingException;
+import luppolo.parse.Polish;
+import luppolo.print.BasicPrinter;
 
 import java.util.Scanner;
 

@@ -1,4 +1,4 @@
-package node;
+package luppolo.node;
 
 /**
  * <p>A visitor interface, for the {@link Node} class</p>

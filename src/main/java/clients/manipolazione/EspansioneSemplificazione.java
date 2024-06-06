@@ -1,11 +1,11 @@
 package clients.manipolazione;
 
-import node.Node;
-import parse.ParsingException;
-import parse.Polish;
-import print.BasicPrinter;
-import transform.Expand;
-import transform.Simplify;
+import luppolo.node.Node;
+import luppolo.parse.ParsingException;
+import luppolo.parse.Polish;
+import luppolo.print.BasicPrinter;
+import luppolo.transform.Expand;
+import luppolo.transform.Simplify;
 
 import java.util.Scanner;
 
