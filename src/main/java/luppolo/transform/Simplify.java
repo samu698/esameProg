@@ -3,6 +3,7 @@ package luppolo.transform;
 import luppolo.math.Rational;
 import luppolo.node.*;
 
+import java.text.ParseException;
 import java.util.*;
 
 /**
@@ -50,7 +51,6 @@ public class Simplify implements Visitor<Node> {
 			Rational termFactor = Rational.ONE;
 
 			// If the node is a term multiplied by a factor we can consider the term and factor separately
-			// XXX: this is not the cleanest
 			if (s instanceof MulNode mul && mul.operands().get(0) instanceof NumberNode factor) {
 				List<Node> mulOperands = mul.operands();
 				termFactor = factor.value();

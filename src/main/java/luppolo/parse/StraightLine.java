@@ -3,6 +3,7 @@ package luppolo.parse;
 import luppolo.math.Rational;
 import luppolo.node.*;
 
+import java.text.ParseException;
 import java.util.*;
 
 /**
@@ -18,12 +19,6 @@ import java.util.*;
  * @see <a href="https://en.wikipedia.org/wiki/Straight-line_program">Straight line program</a>
  */
 public class StraightLine {
-	/**
-	 * The name of the format.
-	 * This is used when constructing a {@link ParsingException}.
-	 */
-	public final static String FORMAT_NAME = "Straight line";
-
 	/** List of all previously parsed instructions */
 	private final List<Node> previousExpressions;
 
@@ -46,13 +41,14 @@ public class StraightLine {
 	 *         <li>previousExpression must remain unchanged if an error occurs.</li>
 	 *     </ul>
 	 * <p>MUTABILITY: This method will modify the previous expressions list.</p>
+	 * <p>NOTE: If a parse exception is thrown it will have offset 0.</p>
 	 * @param input The input string to parse.
 	 * @return A {@link Node} containing the parsed expression.
-	 * @throws ParsingException If the passed expression is invalid.
+	 * @throws ParseException If the passed expression is invalid.
 	 * @throws NullPointerException If input is null.
 	 */
 	public Node parse(String input)
-		throws ParsingException
+		throws ParseException
 	{
 		Objects.requireNonNull(input);
 		Node parseResult = parseImpl(input);
@@ -82,20 +78,20 @@ public class StraightLine {
 	 * </p>
 	 * @param input The input string to parse.
 	 * @return A {@link Node} containing the parsed expression.
-	 * @throws ParsingException If the passed expression is invalid.
+	 * @throws ParseException If the passed expression is invalid.
 	 * @throws NullPointerException If input is null.
 	 */
 	private Node parseImpl(String input)
-		throws ParsingException, NullPointerException
+		throws ParseException, NullPointerException
 	{
 		Objects.requireNonNull(input);
 		// Split line into parts, trim the input to remove possible trailing newlines
 		String[] parts = input.trim().split("\\s+");
 
 		if (parts.length == 0)
-			throw new ParsingException("Invalid empty string", FORMAT_NAME);
+			throw new ParseException("Invalid empty string", 0);
 		if (parts[0].length() != 1)
-			throw new ParsingException("First part must be a dot or an operator", FORMAT_NAME);
+			throw new ParseException("First part must be a dot or an operator", 0);
 
 		char operatorChar = parts[0].charAt(0);
 		String[] arguments = Arrays.copyOfRange(parts, 1, parts.length);
@@ -103,7 +99,7 @@ public class StraightLine {
 		// Expression is a leaf
 		if (operatorChar == '.') {
 			if (arguments.length != 1)
-				throw new ParsingException("Invalid number of arguments after a dot", FORMAT_NAME);
+				throw new ParseException("Invalid number of arguments after a dot", 0);
 
 			// Argument is a variable
 			if (arguments[0].matches("^[a-zA-Z]+$"))
@@ -114,7 +110,7 @@ public class StraightLine {
 				long value = Long.parseLong(arguments[0]);
 				return new NumberNode(Rational.fromInt(value));
 			} catch (NumberFormatException e) {
-				throw new ParsingException("Invalid syntax", FORMAT_NAME);
+				throw new ParseException("Invalid syntax", 0);
 			}
 		}
 
@@ -125,12 +121,12 @@ public class StraightLine {
 			try {
 				int index = Integer.parseInt(argument);
 				if (index < 0)
-					throw new ParsingException("Invalid negative index", FORMAT_NAME);
+					throw new ParseException("Invalid negative index", 0);
 				if (index >= this.previousExpressions.size())
-					throw new ParsingException("Index out of bounds", FORMAT_NAME);
+					throw new ParseException("Index out of bounds", 0);
 				operands.add(this.previousExpressions.get(index));
 			} catch (NumberFormatException e) {
-				throw new ParsingException("Invalid syntax", FORMAT_NAME);
+				throw new ParseException("Invalid syntax", 0);
 			}
 		}
 
@@ -140,7 +136,7 @@ public class StraightLine {
 			case '*' -> new MulNode(operands);
 			case '/' -> MulNode.fromDiv(operands);
 			case '^' -> makePowNode(operands);
-			default -> throw new ParsingException("First part must be dot or an operator", FORMAT_NAME);
+			default -> throw new ParseException("First part must be dot or an operator", 0);
 		};
 	}
 

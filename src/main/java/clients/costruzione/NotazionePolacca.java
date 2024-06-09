@@ -1,10 +1,10 @@
 package clients.costruzione;
 
 import luppolo.node.Node;
-import luppolo.parse.ParsingException;
 import luppolo.parse.Polish;
 import luppolo.print.BasicPrinter;
 
+import java.text.ParseException;
 import java.util.Scanner;
 
 /**
@@ -12,7 +12,6 @@ import java.util.Scanner;
  * notazione polacca.
  */
 public class NotazionePolacca {
-
 	/**
 	* Client per verificare la costruzione di un'espressione a partire dalla notazione polacca.
 	*
@@ -22,8 +21,7 @@ public class NotazionePolacca {
 	*
 	* @param args non utilizzati.
 	*/
-
-	public static void main(String[] args) throws ParsingException {
+	public static void main(String[] args) throws ParseException {
 		Scanner s = new Scanner(System.in);
 		BasicPrinter basicPrinter = new BasicPrinter();
 		while (s.hasNextLine()) {
@@ -31,5 +29,4 @@ public class NotazionePolacca {
 			System.out.println(expr.transform(basicPrinter));
 		}
 	}
-
 }

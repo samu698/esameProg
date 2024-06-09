@@ -1,11 +1,11 @@
 package clients.manipolazione;
 
 import luppolo.node.Node;
-import luppolo.parse.ParsingException;
 import luppolo.parse.Polish;
 import luppolo.print.BasicPrinter;
 import luppolo.transform.Expand;
 
+import java.text.ParseException;
 import java.util.Scanner;
 
 /** Classe contenete il client per verificare l'espansione delle espressioni. */
@@ -21,8 +21,7 @@ public class Espansione {
 	 *
 	 * @param args non utilizzati.
 	 */
-
-	public static void main(String[] args) throws ParsingException {
+	public static void main(String[] args) throws ParseException {
 		Scanner s = new Scanner(System.in);
 		BasicPrinter printer = new BasicPrinter();
 		while (s.hasNextLine()) {
