@@ -22,34 +22,39 @@ public interface Visitor<Ret> {
 	 * <p>REQUIREMENTS: node must be non-null.</p>
 	 * @param node The node to visit.
 	 * @return The result.
+	 * @throws RuntimeException If an error happens while applying the visitor.
 	 */
-	Ret visit(NumberNode node);
+	Ret visit(NumberNode node) throws RuntimeException;
 	/**
 	 * <p>EFFECTS: Visits a {@link VariableNode}.</p>
 	 * <p>REQUIREMENTS: node must be non-null.</p>
 	 * @param node The node to visit.
 	 * @return The result.
+	 * @throws RuntimeException If an error happens while applying the visitor.
 	 */
-	Ret visit(VariableNode node);
+	Ret visit(VariableNode node) throws RuntimeException;
 	/**
 	 * <p>EFFECTS: Visits a {@link SumNode}.</p>
 	 * <p>REQUIREMENTS: node must be non-null.</p>
 	 * @param node The node to visit.
 	 * @return The result.
+	 * @throws RuntimeException If an error happens while applying the visitor.
 	 */
-	Ret visit(SumNode node);
+	Ret visit(SumNode node) throws RuntimeException;
 	/**
 	 * <p>EFFECTS: Visits a {@link MulNode}.</p>
 	 * <p>REQUIREMENTS: node must be non-null.</p>
 	 * @param node The node to visit.
 	 * @return The result.
+	 * @throws RuntimeException If an error happens while applying the visitor.
 	 */
-	Ret visit(MulNode node);
+	Ret visit(MulNode node) throws RuntimeException;
 	/**
 	 * <p>EFFECTS: Visits a {@link PowNode}.</p>
 	 * <p>REQUIREMENTS: node must be non-null.</p>
 	 * @param node The node to visit.
 	 * @return The result.
+	 * @throws RuntimeException If an error happens while applying the visitor.
 	 */
-	Ret visit(PowNode node);
+	Ret visit(PowNode node) throws RuntimeException;
 }

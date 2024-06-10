@@ -78,13 +78,24 @@ public class BasicRunner {
 
 			writer.println("Expression:");
 			printExpr(expression);
+
 			writer.println("\nSimplified:");
-			printExpr(expression.transform(SIMPLIFY));
+			try {
+				printExpr(expression.transform(SIMPLIFY));
+			} catch (IllegalArgumentException e) {
+				writer.println("Cannot simplify expression because of: " + e.getMessage());
+			}
+
 			writer.println("\nExpanded:");
 			final Node expanded = expression.transform(EXPAND);
 			printExpr(expanded);
+
 			writer.println("\nExpanded and simplified:");
-			printExpr(expanded.transform(SIMPLIFY));
+			try {
+				printExpr(expanded.transform(SIMPLIFY));
+			} catch (IllegalArgumentException e) {
+				writer.println("Cannot simplify expression because of: " + e.getMessage());
+			}
 		}
 	}
 

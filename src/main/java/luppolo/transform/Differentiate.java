@@ -8,7 +8,9 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * <p>A Transformer for {@link Node} that computes the derivative with respect to the selected variable.</p>
+ * <p>
+ *     A Transformer for {@link Node} that computes the derivative with respect to the selected variable.
+ *     The code in this class implements all the simplification described in the project description.
  * <p>REQUIREMENTS:
  * <ul>
  *     <li>variable must be non-null not empty and contain only upper or lowercase letters.</li>

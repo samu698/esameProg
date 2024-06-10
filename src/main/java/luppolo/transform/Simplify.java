@@ -8,7 +8,7 @@ import java.util.*;
 /**
  * <p>
  *     A transformer that simplifies a {@link Node}.
- *     This code in this class implements all the simplification described in the project description.
+ *     The code in this class implements all the simplification described in the project description.
  * <p>REQUIREMENTS: see {@link Visitor} for the requirements.</p>
  * <p>MUTABILITY: This class has no state and it cannot mutate, respecting the mutability requirements of {@link Visitor}.</p>
  */

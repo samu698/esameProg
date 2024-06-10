@@ -30,8 +30,9 @@ public interface Node extends Comparable<Node> {
 	 * @return The transformed value.
 	 * @param <Ret> The return value type.
 	 * @throws NullPointerException If visitor is null.
+	 * @throws RuntimeException if an error happened while applying the visitor.
 	 */
-	<Ret> Ret transform(Visitor<Ret> visitor) throws NullPointerException;
+	<Ret> Ret transform(Visitor<Ret> visitor) throws NullPointerException, RuntimeException;
 
 	/**
 	 * <p>EFFECTS: Checks if the node contains variables in its expression tree.</p>

@@ -8,8 +8,7 @@ import java.util.*;
 /**
  * <p>
  *     A transformer that expands a {@link Node},
- *     by applying the distributive property of the product over the sum
- *     and evaluating powers as a product.
+ *     The code in this class implements all the simplification described in the project description.
  * <p>REQUIREMENTS: see {@link Visitor} for the requirements.</p>
  * <p>MUTABILITY: This class has no state and it cannot mutate, respecting the mutability requirements of {@link Visitor}.</p>
  */
