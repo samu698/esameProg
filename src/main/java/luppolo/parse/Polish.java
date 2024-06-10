@@ -47,7 +47,11 @@ public class Polish {
 				case "/" -> MulNode.fromDiv(getOperands(operands));
 				case "^" -> {
 					List<Node> ops = getOperands(operands);
-					yield new PowNode(ops.get(0), ops.get(1));
+					try {
+						yield new PowNode(ops.get(0), ops.get(1));
+					} catch (IllegalArgumentException e) {
+						throw new ParseException("Cannot simplify exponent to a rational number", 0);
+					}
 				}
 				default -> null;
 			};

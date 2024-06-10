@@ -3,7 +3,6 @@ package luppolo.transform;
 import luppolo.math.Rational;
 import luppolo.node.*;
 
-import java.text.ParseException;
 import java.util.*;
 
 /**

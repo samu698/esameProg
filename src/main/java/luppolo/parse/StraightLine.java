@@ -130,6 +130,9 @@ public class StraightLine {
 			}
 		}
 
+		if (operands.size() < 2)
+			throw new ParseException("An expression must be followed by at least two operands", 0);
+
 		return switch (operatorChar) {
 			case '+' -> new SumNode(operands);
 			case '-' -> SumNode.fromSub(operands);
@@ -147,8 +150,9 @@ public class StraightLine {
 	 * <p>REQUIREMENTS: the size of the operands must be greater than one</p>
 	 * @param operands The operands from which construct the {@link PowNode}.
 	 * @return The constructed {@link PowNode}.
+	 * @throws ParseException if the exponents cannot be converted to rationals
 	 */
-	private Node makePowNode(List<Node> operands) {
+	private Node makePowNode(List<Node> operands) throws ParseException {
 		Objects.requireNonNull(operands);
 		assert operands.size() >= 2;
 
@@ -156,8 +160,12 @@ public class StraightLine {
 		// Advance to the end of the iterator
 		while (iter.hasNext()) iter.next();
 		Node rhs = iter.previous();
-		Node pow = new PowNode(iter.previous(), rhs);
-		while (iter.hasPrevious()) pow = new PowNode(iter.previous(), pow);
-		return pow;
+		try {
+			Node pow = new PowNode(iter.previous(), rhs);
+			while (iter.hasPrevious()) pow = new PowNode(iter.previous(), pow);
+			return pow;
+		} catch (IllegalArgumentException e) {
+			throw new ParseException("Cannot simplify exponent to a rational number", 0);
+		}
 	}
 }
